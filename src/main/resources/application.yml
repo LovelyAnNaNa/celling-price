@@ -1,0 +1,58 @@
+server:
+  #  ssl:
+  #    key-store: classpath:www.1s6s.cn.pfx
+  #    key-store-password: gm7m5042yi
+  #    key-store-type: PKCS12
+  port: 8086
+  tomcat:
+    uri-encoding: utf-8
+
+spring:
+  profiles:
+    active: dev #默认为开发环境
+  mvc:
+    static-path-pattern: /static/**
+  aop:
+    proxy-target-class: true
+  main:
+    #当遇到同样的名字时,允许覆盖注册
+    allow-bean-definition-overriding: true
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+
+  servlet:
+    multipart:
+      enabled: true
+      #文件大小 MB必须大写 单个文件大小
+      max-file-size: 20MB
+      #maxRequestSize是设置总上传的数据大小
+      max-request-size: 20MB
+#  devtools:
+#    restart:
+#      enabled: true
+
+
+#mybatisPlus
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  typeAliasesPackage: com.whtt.cellingprice.entity.pojo
+  global-config:
+    db-config:
+      #主键类型  AUTO:"数据库ID自增", INPUT:"用户输入ID",ID_WORKER:"全局唯一ID (数字类型唯一ID)", UUID:"全局唯一ID UUID";
+      id-type: auto
+      #字段策略 IGNORED:"忽略判断",NOT_NULL:"非 NULL 判断"),NOT_EMPTY:"非空判断"
+      field-strategy: IGNORED
+      #驼峰下划线转换
+      column-underline: true
+      db-type: mysql
+    #刷新mapper
+    refresh-mapper: true
+  #原生配置
+  configuration:
+    #开启驼峰功能
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+

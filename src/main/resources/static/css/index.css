@@ -1,0 +1,20 @@
+#row {
+	background: url(../img/setting.jpg) no-repeat center center fixed;
+	-moz-background-size: cover;
+	background-size: cover;
+	margin-left: 20px;
+}
+
+#row #phone_input {
+	width: 200px;
+	height: 30px;
+	float: left;
+	margin-left: 50px;
+	text-align: center;
+}
+
+#row p {
+	text-align: center;
+	font-size: 25px;
+	color: skyblue;
+}
