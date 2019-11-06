@@ -1,19 +1,23 @@
 package com.whtt.cellingprice.entity.pojo;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * <p>
  * 
  * </p>
  *
- * @author wbh
+ * @author weishilei
  * @since 2019-11-06
  */
 @Data
@@ -24,35 +28,24 @@ public class SysAccount extends Model<SysAccount> {
 
     private static final long serialVersionUID=1L;
 
-    /**
-     * 账号id
-     */
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * 账号(对应微信账号)
+     * 账号
      */
-    private String accountWxNumber;
+    @NotBlank(message = "手机号不能为空")
+    private String phone;
 
     /**
-     * 账号状态,0未登录,1已登录
+     * 账号状态,0未登录,1已登录,3失效
      */
     private Integer status;
 
     /**
-     * 登录后的cookie
+     * 登录信息
      */
-    private String cookie;
-
-    /**
-     * 用户名称
-     */
-    private String username;
-
-    /**
-     * 积分
-     */
-    private Integer integral;
+    private String loginInfo;
 
     /**
      * 创建账号的用户id
@@ -71,23 +64,14 @@ public class SysAccount extends Model<SysAccount> {
      */
     private LocalDateTime updateTime;
 
-    /**
-     * 预留字段1
-     */
-    private String standbyApplication;
-
 
     public static final String ID = "id";
 
-    public static final String ACCOUNT_WX_NUMBER = "account_wx_number";
+    public static final String PHONE = "phone";
 
     public static final String STATUS = "status";
 
-    public static final String COOKIE = "cookie";
-
-    public static final String USERNAME = "username";
-
-    public static final String INTEGRAL = "integral";
+    public static final String LOGIN_INTO = "login_into";
 
     public static final String CREATE_ID = "create_id";
 
@@ -96,8 +80,6 @@ public class SysAccount extends Model<SysAccount> {
     public static final String UPDATE_ID = "update_id";
 
     public static final String UPDATE_TIME = "update_time";
-
-    public static final String STANDBY_APPLICATION = "standby_application";
 
     @Override
     protected Serializable pkVal() {
