@@ -108,22 +108,11 @@ public class SysCustomerController {
     @PostMapping(value = "/list")
     public Object list(@RequestParam(value = "page", defaultValue = "1") Integer page, @RequestParam(value = "limit", defaultValue = "10") Integer limit,
                        @RequestParam(value = "customerName",required = false) String customerName,
-                       @RequestParam(value = "rangeIntegral",required = false) String rangeIntegral) {
-        PageHelper.startPage(page,limit);
-        QueryWrapper<SysCustomer> customerQueryWrapper = new QueryWrapper<>();
-        //用户名模糊查询
-        if(StringUtils.isNotBlank(customerName)){
-            customerQueryWrapper.like("customer_name",customerName);
-        }
-        //价格区间
-        if(StringUtils.isNotBlank(rangeIntegral)){
-            String[] range = rangeIntegral.split("-");
-            if(range.length == 2){
-                customerQueryWrapper.between("integral",range[0],range[1]);
-            }
-        }
+                       @RequestParam(value = "rangeIntegral",required = false) String rangeIntegral,
+                       @RequestParam(value = "startTime",required = false) String startTime,
+                       @RequestParam(value = "endTime",required = false) String endTime) {
         //查询数据库中的数据
-        List<SysCustomer> customerList = customerService.list(customerQueryWrapper);
+        List<SysCustomer> customerList = customerService.getCustomerList(page,limit,customerName,rangeIntegral,startTime,endTime);
         //返回给前端的对象
         PageData<SysCustomer> pageData = new PageData<>(customerList);
         return pageData;
