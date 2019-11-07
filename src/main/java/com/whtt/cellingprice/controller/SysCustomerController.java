@@ -46,7 +46,6 @@ public class SysCustomerController {
     @ResponseBody
     @PostMapping(value = "/saveAdd")
     public Object saveAdd(@RequestBody SysCustomer newCustomer){
-        //判断用户
 
         boolean save = customerService.save(newCustomer);
         if(save){
