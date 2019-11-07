@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * <p>
@@ -16,6 +17,6 @@ import javax.validation.constraints.NotNull;
  */
 public interface SysConfigService extends IService<SysConfig> {
 
-    //更改扣除的用户积分信息
-    public Boolean updateDeductIntegral(Integer deductIntegral);
+    int updateConfig(List<SysConfig> configList);
+
 }

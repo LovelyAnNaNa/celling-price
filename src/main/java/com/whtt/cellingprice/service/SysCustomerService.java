@@ -18,6 +18,7 @@ public interface SysCustomerService extends IService<SysCustomer> {
     //根据用户账号获取用户的剩余积分
     SysCustomer getByCustomernumber(String customerNumber);
 
+    //判断用户积分余额是否够用,true不够,false够
     boolean checkIntegral(String customerNumber,Integer status);
 
     void addOrder(String commodity,String customerNumber,Integer status);

@@ -1,8 +1,9 @@
-layui.use(['layer', 'form', 'table'], function () {
+layui.use(['layer', 'form', 'table','laydate'], function () {
     var layer = layui.layer,
         $ = layui.jquery,
         form = layui.form,
         table = layui.table,
+        laydate = layui.laydate,
         t;              //表格变量
     t = {
         elem: '#order-table',
@@ -78,6 +79,14 @@ layui.use(['layer', 'form', 'table'], function () {
             );
         }
     });
+
+    $(".datetime").each(function(index,ele){
+        //执行一个laydate实例
+        laydate.render({
+            elem: this, //指定元素
+            type: 'datetime'
+        });
+    })
 
     $('.layui-inline .layui-btn').on('click', function () {
         var type = $(this).data('type');

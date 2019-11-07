@@ -1,7 +1,6 @@
 package com.whtt.cellingprice.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.whtt.cellingprice.common.CommonResult;
 import com.whtt.cellingprice.entity.pojo.SysConfig;
 import com.whtt.cellingprice.service.SysConfigService;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * <p>
@@ -30,24 +30,18 @@ public class SysConfigController {
 
     //更改每次顶价扣除的用户的积分
     @ResponseBody
-    @PostMapping(value = "/updateDeductIntegral")
-    public Object updateDeductIntegral(@RequestParam @NotNull(message = "扣除的积分金额不能为空!") Integer deductIntegral){
-        //获取更改结果
-        boolean result = configService.updateDeductIntegral(deductIntegral);
-        if(result){
-            return CommonResult.success();
-        }
-
+    @PostMapping(value = "/updateConfig")
+    public Object updateDeductIntegral(@RequestBody List<SysConfig> configList){
+        configList.forEach(config -> configService.updateById(config));
         return CommonResult.failed("积分设置更改失败");
     }
 
-    @RequestMapping(value = "/integral")
+    @GetMapping
     public Object integral() {
-        QueryWrapper<SysConfig> queryWrapper = new QueryWrapper<SysConfig>().eq("config_key", "deduct_integral");
-        SysConfig deductConfig = configService.getOne(queryWrapper);
+        List<SysConfig> configList = configService.list();
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("config/integral");
-        mav.addObject("config",deductConfig);
+        mav.setViewName("config/list");
+        mav.addObject("configList",configList);
         return mav;
     }
 

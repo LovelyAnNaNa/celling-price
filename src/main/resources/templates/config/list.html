@@ -27,12 +27,12 @@
     <legend>积分设置</legend>
     <div class="layui-row">
         <div class="layui-form">
-            <div class="layui-form-item dataEle">
-                <label class="layui-form-label">每次顶价所需的积分:</label>
-                <input class="config_key" hidden/>
+            <div class="layui-form-item dataEle" th:each="config,configStat : ${configList}">
+                <label class="layui-form-label" th:text="${config.remarks}"></label>
                 <div class="layui-input-block">
-                    <input type="text" hidden class="id" id="deductConfigId" th:value="${config.id}">
-                    <input type="text" class="layui-input" id="configValue" th:value="${config.configValue}">
+                    <input type="text" hidden class="id" th:value="${config.id}">
+                    <input type="text" class="layui-input configValue" th:value="${config.configValue}">
+                    <input type="text" hidden class="configKey" th:value="${config.configKey}">
                 </div>
             </div>
             <div class="layui-form-item" style="padding-left: 30%;">
@@ -46,5 +46,5 @@
 
 </body>
 <script type="text/javascript" th:src="@{/static/layui/layui.js}"></script>
-<script type="text/javascript" th:src="@{/static/admin/js/config/integral.js}"></script>
+<script type="text/javascript" th:src="@{/static/admin/js/config/list.js}"></script>
 </html>

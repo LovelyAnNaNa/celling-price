@@ -6,6 +6,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.whtt.cellingprice.common.CommonResult;
 import com.whtt.cellingprice.common.PageData;
+import com.whtt.cellingprice.config.DataConfig;
 import com.whtt.cellingprice.entity.pojo.SysCustomer;
 import com.whtt.cellingprice.service.SysCustomerService;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -32,6 +34,18 @@ public class SysCustomerController {
     @Autowired
     private SysCustomerService customerService;
 
+    //获取扣除积分的信息
+    @ResponseBody
+    @PostMapping(value = "/getDeductInfo")
+    public Object getDeductInfo(){
+        HashMap<String, Object> infoMap = new HashMap<>();
+        //顶价成功扣除的积分
+        infoMap.put("cellingIntegral", DataConfig.cellingIntegral);
+        //违约扣除的积分
+        infoMap.put("violateIntegral", DataConfig.violateIntegral);
+        return CommonResult.success(infoMap);
+    }
+
     //检查用户的积分
     @ResponseBody
     @PostMapping(value = "/checkIntegral")
@@ -40,7 +54,6 @@ public class SysCustomerController {
         boolean result = customerService.checkIntegral(customerNumber, status);
         return CommonResult.success(result);
     }
-
 
     /**
      *
@@ -63,6 +76,9 @@ public class SysCustomerController {
     @PostMapping(value = "/customerInfo")
     public Object customerInfo(@RequestParam @NotBlank(message = "用户账号不能为空!") String customernumber){
         SysCustomer customerInfo = customerService.getByCustomernumber(customernumber);
+        if(customerInfo == null){
+            return CommonResult.failed();
+        }
         return CommonResult.success(customerInfo);
     }
 

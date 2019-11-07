@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -25,17 +26,10 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     private SysConfigMapper configMapper;
 
     @Override
-    public Boolean updateDeductIntegral(Integer deductIntegral) {
-        //获取配置信息
-        SysConfig deductConfig = configMapper.selectOne(new QueryWrapper<SysConfig>().eq("config_key", "deduct_integral"));
-        deductConfig.setConfigValue(deductIntegral + "");
-        //更改配置信息
-        int count = configMapper.updateById(deductConfig);
-        if (count < 0) {
-            return false;
-        }
-        //更改配置类中的信息
-        DataConfig.cellIntegral = deductIntegral;
-        return true;
+    public int updateConfig(List<SysConfig> configList) {
+        configList.forEach(config -> {
+            configMapper.updateById(config);
+        });
+        return 0;
     }
 }

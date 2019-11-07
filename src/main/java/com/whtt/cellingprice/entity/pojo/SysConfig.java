@@ -32,7 +32,7 @@ public class SysConfig extends Model<SysConfig> {
     private Integer id;
 
     /**
-     * 配置名称,显示给前台用户查看
+     * 配置名称
      */
     private String configKey;
 
@@ -42,7 +42,7 @@ public class SysConfig extends Model<SysConfig> {
     private String configValue;
 
     /**
-     * 配置备注
+     * 配置备注,显示给前台用户查看
      */
     private String remarks;
 

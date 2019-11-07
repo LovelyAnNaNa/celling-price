@@ -33,8 +33,10 @@ public class SysOrderController {
     public Object list(@RequestParam(value = "page",defaultValue = "1")Integer page,@RequestParam(value = "limit",defaultValue = "10")Integer limit,
                        @RequestParam(value = "customerName",required = false)String customerName,
                        @RequestParam(value = "rangeIntegral",required = false)String rangeIntegral,
-                       @RequestParam(value = "status",required = false) Integer status){
-        List<SysOrder> orderList = orderService.getOrderList(page, limit, customerName, rangeIntegral,status);
+                       @RequestParam(value = "status",required = false) Integer status,
+                       @RequestParam(value = "startTime",required = false) String startTime,
+                       @RequestParam(value = "endTime",required = false) String endTime){
+        List<SysOrder> orderList = orderService.getOrderList(page, limit, customerName, rangeIntegral,status,startTime,endTime);
 
         return new PageData<SysOrder>(orderList);
     }
