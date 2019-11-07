@@ -1,6 +1,7 @@
 package com.whtt.cellingprice.controller;
 
 
+
 import com.whtt.cellingprice.common.CommonResult;
 import com.whtt.cellingprice.common.PageData;
 import com.whtt.cellingprice.entity.pojo.SysAccount;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -45,8 +47,11 @@ public class SysAccountController {
      * @return
      */
     @GetMapping("/add")
-    public String add() {
-        return "account/add";
+    public Object add(String phone, Integer id,ModelAndView model) {
+        model.addObject("phone",phone);
+        model.addObject("id",id);
+        model.setViewName("account/add");
+        return model;
     }
 
     /**

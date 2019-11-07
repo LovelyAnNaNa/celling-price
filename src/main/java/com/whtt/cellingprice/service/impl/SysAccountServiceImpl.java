@@ -194,11 +194,6 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
      */
     @Override
     public CommonResult getAccountCode(String phone) {
-        SysAccount account = selectByPhone(phone);
-        if (null != account) {
-            return CommonResult.failed("手机号重复添加");
-        }
-
         return getCode(phone);
     }
 
@@ -229,6 +224,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             account.setLoginInfo(data.toJSONString());
             account.setStatus(Constant.ACCOUNT_STATUS_LOGIN);
             account.setMsg("登录成功");
+            account.updateById();
         } catch (Exception e) {
             return CommonResult.failed();
         }
