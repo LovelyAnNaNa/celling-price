@@ -106,8 +106,10 @@ public class SysAccountController {
      */
     @ResponseBody
     @PostMapping("/offer")
-    public CommonResult offer(@NotBlank(message = "请选择正确拍品") String url, @NotBlank(message = "用户账号为空") String customerNumber) {
-        return sysAccountService.offer(url, customerNumber);
+    public CommonResult offer(@NotBlank(message = "请选择正确拍品") String url,
+                              @NotBlank(message = "用户账号为空") String customerNumber,
+                              @NotNull(message = "请选择正确类型") Integer type) {
+        return sysAccountService.offer(url, customerNumber, type);
     }
 
     /**

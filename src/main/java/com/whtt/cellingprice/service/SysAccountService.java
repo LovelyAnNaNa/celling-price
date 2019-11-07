@@ -88,7 +88,9 @@ public interface SysAccountService extends IService<SysAccount> {
     /**
      * 出价
      * @param url
+     * @param customerNumber
+     * @param type
      * @return
      */
-    CommonResult offer(String url, String customerNumber);
+    CommonResult offer(String url, String customerNumber, Integer type);
 }
