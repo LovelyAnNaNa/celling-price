@@ -177,20 +177,23 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             return CommonResult.failed("账号不存在");
         }
         String phone = account.getPhone();
-        String response = RequestUtil.sendGet(Constant.URL_SEND_CODE, "type=sms&telephone=" + phone, Constant.URL_SEND_CODE_HEADERS);
+        return getCode(phone);
+    }
 
-        JSONObject jsonObject;
-        try {
-            jsonObject = JSONObject.parseObject(response);
-            if (getResponseCode(jsonObject)) {
-                return CommonResult.failed(jsonObject.getString("msg"));
-            }
-
-        } catch (Exception e) {
-            return CommonResult.failed();
+    /**
+     * 根据手机号获取验证码
+     *
+     * @param phone
+     * @return
+     */
+    @Override
+    public CommonResult getAccountCode(String phone) {
+        SysAccount account = selectByPhone(phone);
+        if (null != account) {
+            return CommonResult.failed("手机号重复添加");
         }
 
-        return CommonResult.success();
+        return getCode(phone);
     }
 
     /**
@@ -328,5 +331,27 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
     private SysAccount selectByPhone(String phone) {
         QueryWrapper<SysAccount> queryWrapper = new QueryWrapper<SysAccount>().eq("phone", phone);
         return baseMapper.selectOne(queryWrapper);
+    }
+
+    /**
+     * 获验证码
+     * @param phone
+     * @return
+     */
+    private CommonResult getCode(String phone) {
+        String response = RequestUtil.sendGet(Constant.URL_SEND_CODE, "type=sms&telephone=" + phone, Constant.URL_SEND_CODE_HEADERS);
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSONObject.parseObject(response);
+            if (getResponseCode(jsonObject)) {
+                return CommonResult.failed(jsonObject.getString("msg"));
+            }
+
+        } catch (Exception e) {
+            return CommonResult.failed();
+        }
+
+        return CommonResult.success();
+
     }
 }
