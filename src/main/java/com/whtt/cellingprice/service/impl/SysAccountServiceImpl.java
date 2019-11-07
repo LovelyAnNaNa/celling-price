@@ -234,7 +234,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
      * @return
      */
     @Override
-    public CommonResult offer(String url) {
+    public CommonResult offer(String url, String customerNumber) {
         String goodsId;
 
         try {
