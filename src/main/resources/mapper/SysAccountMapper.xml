@@ -5,21 +5,18 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.whtt.cellingprice.entity.pojo.SysAccount">
         <id column="id" property="id" />
-        <result column="account_wx_number" property="accountWxNumber" />
+        <result column="phone" property="phone" />
         <result column="status" property="status" />
-        <result column="cookie" property="cookie" />
-        <result column="username" property="username" />
-        <result column="integral" property="integral" />
+        <result column="login_into" property="loginInfo" />
         <result column="create_id" property="createId" />
         <result column="create_time" property="createTime" />
         <result column="update_id" property="updateId" />
         <result column="update_time" property="updateTime" />
-        <result column="standby_application" property="standbyApplication" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, account_wx_number, status, cookie, username, integral, create_id, create_time, update_id, update_time, standby_application
+        id, phone, status, login_info, create_id, create_time, update_id, update_time
     </sql>
 
 </mapper>

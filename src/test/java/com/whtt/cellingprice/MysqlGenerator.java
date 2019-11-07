@@ -19,8 +19,8 @@ import java.util.*;
  * @author weishilei
  */
 public class MysqlGenerator {
-    private static String authorName = "wbh";     //作者(换成自己的)
-    private static String[] table = {"sys_customer"};             //table名字
+    private static String authorName = "weishilei";     //作者(换成自己的)
+    private static String[] table = {"sys_account"};             //table名字
     private static String prefix = "";                     //table前缀
     private static File file = new File("");
     private static String path = file.getAbsolutePath();
@@ -56,7 +56,7 @@ public class MysqlGenerator {
                         .setDriverName("com.mysql.cj.jdbc.Driver")
                         .setUsername("root")
                         .setPassword("root")
-                        .setUrl("jdbc:mysql://127.0.0.1:3306/celling_price?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useOldAliasMetadataBehavior=true")
+                        .setUrl("jdbc:mysql://192.168.0.188:3306/celling_price?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useOldAliasMetadataBehavior=true")
         ).setStrategy(
                 // 策略配置
                 new StrategyConfig()
