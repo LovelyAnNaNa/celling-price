@@ -1,8 +1,9 @@
-layui.use(['layer', 'form', 'table'], function () {
+layui.use(['layer', 'form', 'table','laydate'], function () {
     var layer = layui.layer,
         $ = layui.jquery,
         form = layui.form,
         table = layui.table,
+        laydate = layui.laydate,
         t;              //表格变量
     t = {
         elem: '#recharge-table',
@@ -33,6 +34,15 @@ layui.use(['layer', 'form', 'table'], function () {
         }
     };
     table.render(t);
+
+    //绑定日期控件
+    $(".datetime").each(function(index,ele){
+        //执行一个laydate实例
+        laydate.render({
+            elem: this, //指定元素
+            type: 'datetime'
+        });
+    })
 
     //搜索
     form.on("submit(searchForm)", function (data) {

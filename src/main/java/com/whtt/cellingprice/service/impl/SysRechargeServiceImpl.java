@@ -1,7 +1,9 @@
 package com.whtt.cellingprice.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
+import com.whtt.cellingprice.common.Constant;
 import com.whtt.cellingprice.entity.pojo.SysCustomer;
 import com.whtt.cellingprice.entity.pojo.SysRecharge;
 import com.whtt.cellingprice.mapper.SysRechargeMapper;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,7 +36,8 @@ public class SysRechargeServiceImpl extends ServiceImpl<SysRechargeMapper, SysRe
     private SysCustomerService customerService;
 
     @Override
-    public List<SysRecharge> getRechargeList(Integer page, Integer limit, String customerName,String rangeIntegral) {
+    public List<SysRecharge> getRechargeList(Integer page, Integer limit, String customerName,String rangeIntegral,
+                                   String startTime,String endTime) {
         QueryWrapper<SysRecharge> rechargeQueryWrapper = new QueryWrapper<>();
         //根据充值的用户查询
         if(StringUtils.isNotBlank(customerName)){
@@ -56,6 +60,15 @@ public class SysRechargeServiceImpl extends ServiceImpl<SysRechargeMapper, SysRe
             if(integral != null && integral.length == 2){
                 rechargeQueryWrapper.between("integral",integral[0],integral[1]);
             }
+        }
+
+        //根据订单创建时间查询
+        if(StringUtils.isNotBlank(startTime)){
+            //如果没有终止时间,默认当前时间为终止事件
+            if(StringUtils.isBlank(endTime)) {
+                endTime = DateUtil.format(new Date(), Constant.FORMAT_DATE_TIME);
+            }
+            rechargeQueryWrapper.between("create_time",startTime,endTime);
         }
 
         PageHelper.startPage(page,limit);

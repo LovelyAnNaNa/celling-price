@@ -32,8 +32,8 @@ public class SysConfigController {
     @ResponseBody
     @PostMapping(value = "/updateConfig")
     public Object updateDeductIntegral(@RequestBody List<SysConfig> configList){
-        configList.forEach(config -> configService.updateById(config));
-        return CommonResult.failed("积分设置更改失败");
+        configService.updateConfig(configList);
+        return CommonResult.success();
     }
 
     @GetMapping

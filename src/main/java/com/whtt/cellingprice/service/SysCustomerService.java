@@ -15,6 +15,8 @@ import java.util.List;
  */
 public interface SysCustomerService extends IService<SysCustomer> {
 
+    List<SysCustomer> getCustomerList(Integer page,Integer limit,String customerName,String rangeIntegral,String startTime,String endTime);
+
     //根据用户账号获取用户的剩余积分
     SysCustomer getByCustomernumber(String customerNumber);
 

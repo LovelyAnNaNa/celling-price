@@ -75,6 +75,7 @@ public class SysOrderServiceImpl extends ServiceImpl<SysOrderMapper, SysOrder> i
             orderQueryWrapper.eq("status",status);
         }
 
+        orderQueryWrapper.orderByDesc("id");
         PageHelper.startPage(page,limit);
         List<SysOrder> orderList = orderMapper.selectList(orderQueryWrapper);
         getCascadeInfo(orderList);
