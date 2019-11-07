@@ -6,6 +6,10 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.whtt.cellingprice.base.OrderBase;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -22,7 +26,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("sys_order")
-public class SysOrder extends Model<SysOrder> {
+public class SysOrder extends OrderBase<SysOrder> {
 
     private static final long serialVersionUID=1L;
 
@@ -60,7 +64,8 @@ public class SysOrder extends Model<SysOrder> {
     /**
      * 订单创建时间
      */
-    private LocalDateTime createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
 
 
     public static final String ID = "id";

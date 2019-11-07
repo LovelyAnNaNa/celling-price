@@ -1,9 +1,17 @@
 package com.whtt.cellingprice.controller;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.github.pagehelper.PageHelper;
+import com.whtt.cellingprice.common.CommonResult;
+import com.whtt.cellingprice.common.PageData;
+import com.whtt.cellingprice.entity.pojo.SysOrder;
+import com.whtt.cellingprice.service.SysOrderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RestController;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * <p>
@@ -13,9 +21,36 @@ import org.springframework.web.bind.annotation.RestController;
  * @author wbh
  * @since 2019-11-07
  */
-@RestController
-@RequestMapping("/sysOrder")
+@Controller
+@RequestMapping("/admin/sysOrder")
 public class SysOrderController {
 
+    @Autowired
+    private SysOrderService orderService;
+
+    @ResponseBody
+    @PostMapping(value = "/list")
+    public Object list(@RequestParam(value = "page",defaultValue = "1")Integer page,@RequestParam(value = "limit",defaultValue = "10")Integer limit,
+                       @RequestParam(value = "customerName",required = false)String customerName,
+                       @RequestParam(value = "rangeIntegral",required = false)String rangeIntegral){
+
+        PageHelper.startPage(page,limit);
+        List<SysOrder> orderList = orderService.list(null);
+        orderService.getCascadeInfo(orderList);
+
+        return new PageData<SysOrder>(orderList);
+    }
+
+    @ResponseBody
+    @PostMapping(value = "/del")
+    public Object del(@RequestParam @NotNull(message = "订单id不能为空!") Integer orderId){
+        orderService.removeById(orderId);
+        return CommonResult.success();
+    }
+
+    @GetMapping
+    public String listPage(){
+          return "order/list";
+    }
 }
 

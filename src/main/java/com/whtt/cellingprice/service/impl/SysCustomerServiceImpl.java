@@ -37,7 +37,7 @@ public class SysCustomerServiceImpl extends ServiceImpl<SysCustomerMapper, SysCu
     }
 
     @Override
-    public void addOrder(String url, String customerNumber) {
+    public void addOrder(String commodity, String customerNumber) {
         //获取用户信息
         SysCustomer customerInfo = getByCustomernumber(customerNumber);
         Integer integral = customerInfo.getIntegral();
@@ -48,7 +48,7 @@ public class SysCustomerServiceImpl extends ServiceImpl<SysCustomerMapper, SysCu
         //添加一条订单信息
         SysOrder newOrder = new SysOrder();
         newOrder.setCustomerId(customerInfo.getId());
-        newOrder.setCommodity(url);
+        newOrder.setCommodity(commodity);
         newOrder.setStatus(1);
         newOrder.setDeductIntegral(DataConfig.deductIntegral);
         //保存订单信息

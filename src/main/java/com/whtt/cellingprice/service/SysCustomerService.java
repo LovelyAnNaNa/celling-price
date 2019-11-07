@@ -16,5 +16,5 @@ public interface SysCustomerService extends IService<SysCustomer> {
     //根据用户账号获取用户的剩余积分
     SysCustomer getByCustomernumber(String customerNumber);
 
-    void addOrder(String url,String customerNumber);
+    void addOrder(String commodity,String customerNumber);
 }
