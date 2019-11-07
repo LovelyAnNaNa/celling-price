@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="com.whtt.cellingprice.entity.pojo.SysAccount">
         <id column="id" property="id" />
         <result column="phone" property="phone" />
+        <result column="msg" property="msg" />
         <result column="status" property="status" />
         <result column="login_into" property="loginInfo" />
         <result column="create_id" property="createId" />
@@ -16,7 +17,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, phone, status, login_info, create_id, create_time, update_id, update_time
+        id, phone, status, msg, login_info, create_id, create_time, update_id, update_time
     </sql>
 
 </mapper>

@@ -21,14 +21,35 @@ public class Constant {
     public final static Integer ACCOUNT_STATUS_LOGIN = 1;
 
     /**
+     * 账号失效
+     */
+    public final static Integer ACCOUNT_STATUS_FAILURE = 2;
+
+
+    /**
+     * 产品id长度
+     */
+    public final static Integer GOODS_ID_LENGTH = 16;
+
+    /**
      * 发送验证码url
      */
     public final static String URL_SEND_CODE = "https://api.weipaitang.com/app/v1.0/user/send-code";
 
     /**
-     * 发送验证码url
+     * 获取账号登录信息url
      */
-    public final static String URL_GET_ACCOUNT_INTO = "https://api.weipaitang.com/app/v1.0/user/login";
+    public final static String URL_GET_ACCOUNT_INFO = "https://api.weipaitang.com/app/v1.0/user/login";
+
+    /**
+     * 获取商品信息url
+     */
+    public final static String URL_GET_GOODS_INFO = "https://api.weipaitang.com/wechat/v1.0/sale/mini-detail";
+
+    /**
+     * 出价url
+     */
+    public final static String URL_OFFER = "https://api.weipaitang.com/wechat/v1.0/bid/to-bid-l";
 
     /**
      * 发送验证码请求他

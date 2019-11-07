@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -37,8 +38,11 @@ public class SysAccountController {
      * @param keyword
      * @return
      */
+    @ResponseBody
+    @GetMapping("/listByPageAndSearch")
     public PageData listByPageAndSearch(@RequestParam(value = "page", defaultValue = "1") Integer page,
-                                        @RequestParam(value = "size", defaultValue = "10") Integer size, Integer status, String keyword) {
+                                        @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                        Integer status, String keyword) {
         return sysAccountService.listByPageAndSearch(page, size, status, keyword);
     }
 
@@ -47,6 +51,7 @@ public class SysAccountController {
      * @param id
      * @return
      */
+    @ResponseBody
     @GetMapping("/getAccountCode")
     public CommonResult getAccountCode(@NotNull(message = "请选择账号") Integer id) {
         return sysAccountService.getAccountCode(id);
@@ -58,14 +63,28 @@ public class SysAccountController {
      * @param code
      * @return
      */
+    @ResponseBody
+    @GetMapping("/getAccountLoginInfo")
     public CommonResult getAccountLoginInfo(@NotNull(message = "请选择账号") Integer id, String code) {
         return sysAccountService.getAccountLoginInfo(id, code);
+    }
+
+    /**
+     * 出价
+     * @param url
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/offer")
+    public CommonResult offer(@NotBlank(message = "请选择正确拍品") String url) {
+        return sysAccountService.offer(url);
     }
 
     /**
      * 新增账号
       * @return
      */
+    @ResponseBody
     @PostMapping("/insert")
     public CommonResult insert(@RequestBody SysAccount sysAccount) {
         return sysAccountService.insert(sysAccount);
@@ -76,21 +95,10 @@ public class SysAccountController {
      * @param sysAccount
      * @return
      */
+    @ResponseBody
     @PostMapping("/update")
     public CommonResult update(@RequestBody SysAccount sysAccount) {
         return sysAccountService.update(sysAccount);
-    }
-
-    /**
-     * 登录账号
-     * @param id
-     * @param loginInfo
-     * @return
-     */
-    @PostMapping("/login")
-    public CommonResult login(@NotNull(message = "请选择账号") Integer id,
-                              @NotNull(message = "用户登录失败") String loginInfo) {
-        return sysAccountService.login(id, loginInfo);
     }
 
     /**
@@ -98,6 +106,7 @@ public class SysAccountController {
      * @param id
      * @return
      */
+    @ResponseBody
     @PostMapping("/delete")
     public CommonResult delete(@NotNull(message = "请选择账号") Integer id) {
         return sysAccountService.delete(id);
@@ -108,6 +117,7 @@ public class SysAccountController {
      * @param sysAccountList
      * @return
      */
+    @ResponseBody
     @PostMapping("/deleteSome")
     public CommonResult deleteSome(@RequestBody @NotNull(message = "请选择账号") List<SysAccount> sysAccountList) {
         return sysAccountService.deleteSome(sysAccountList);

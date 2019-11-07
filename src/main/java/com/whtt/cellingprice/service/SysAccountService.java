@@ -77,4 +77,11 @@ public interface SysAccountService extends IService<SysAccount> {
      * @return
      */
     CommonResult getAccountLoginInfo(Integer id, String code);
+
+    /**
+     * 出价
+     * @param url
+     * @return
+     */
+    CommonResult offer(String url);
 }

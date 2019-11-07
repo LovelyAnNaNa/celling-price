@@ -1,5 +1,6 @@
 package com.whtt.cellingprice.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -45,6 +46,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
 
         account.setStatus(Constant.ACCOUNT_STATUS_NOT_LOGIN);
         account.setCreateTime(LocalDateTime.now());
+        account.setMsg("未知");
         boolean flag = account.insert();
         if (flag) {
             return CommonResult.success();
@@ -130,7 +132,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             queryWrapper.eq("status", status).or();
         }
         if (StringUtils.isNotBlank(keyword)) {
-            queryWrapper.eq("phone", keyword);
+            queryWrapper.eq("phone", keyword).or().eq("msg", keyword);
         }
 
         IPage<SysAccount> iPage = page(new Page<>(page, size), queryWrapper);
@@ -205,7 +207,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             return CommonResult.failed("账号不存在");
         }
         String phone = account.getPhone();
-        String response = RequestUtil.sendGet(Constant.URL_GET_ACCOUNT_INTO, "type=2&telephone=" + phone + "&verifyCode=" + code + "&sc&wpjbPromoter", Constant.URL_SEND_CODE_HEADERS);
+        String response = RequestUtil.sendGet(Constant.URL_GET_ACCOUNT_INFO, "type=2&telephone=" + phone + "&verifyCode=" + code + "&sc&wpjbPromoter", Constant.URL_SEND_CODE_HEADERS);
 
         JSONObject jsonObject;
         try {
@@ -217,11 +219,68 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             JSONObject data = jsonObject.getJSONObject("data");
             account.setLoginInfo(data.toJSONString());
             account.setStatus(Constant.ACCOUNT_STATUS_LOGIN);
+            account.setMsg("登录成功");
         } catch (Exception e) {
             return CommonResult.failed();
         }
 
         return CommonResult.success();
+    }
+
+    /**
+     * 出价
+     *
+     * @param url
+     * @return
+     */
+    @Override
+    public CommonResult offer(String url) {
+        String goodsId;
+
+        try {
+            int index = url.lastIndexOf("/") + 1;
+            int index2 = url.indexOf("?");
+            goodsId = url.substring(index, index2);
+            if (Constant.GOODS_ID_LENGTH != goodsId.length()) {
+                return CommonResult.failed("请选择正确拍品");
+            }
+        } catch (Exception e) {
+            return CommonResult.failed("请选择正确拍品");
+        }
+        //请求参数
+        String offerParamter = getOfferParamter(url);
+        if (StringUtils.isBlank(offerParamter)) {
+            return CommonResult.failed("请选择正确拍品");
+        }
+
+        boolean flag = false;
+        //查询可用账号
+        List<SysAccount> accountList = baseMapper.selectList(new QueryWrapper<SysAccount>().eq("status", Constant.ACCOUNT_STATUS_LOGIN));
+        for (SysAccount account : accountList) {
+            String loginInfo = account.getLoginInfo();
+            JSONObject jsonObject = JSONObject.parseObject(loginInfo);
+            String uri = jsonObject.getString("uri");
+            offerParamter += uri;
+
+            String response = RequestUtil.sendGet(Constant.URL_OFFER, offerParamter, Constant.URL_SEND_CODE_HEADERS);
+            JSONObject jo = JSONObject.parseObject(response);
+            Integer code = jo.getInteger("code");
+            if (0 != code) {
+                String msg = jo.getString("msg");
+                account.setMsg(msg);
+                account.setStatus(Constant.ACCOUNT_STATUS_FAILURE);
+                account.updateById();
+                continue;
+            }
+
+            flag = true;
+            break;
+        }
+
+        if (flag) {
+            return CommonResult.success();
+        }
+        return CommonResult.failed();
     }
 
     private boolean getResponseCode(JSONObject jsonObject) {
@@ -231,6 +290,34 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         }
 
         return false;
+    }
+
+    /**
+     * 获取出价请求接口参数
+     * @param goodsId
+     * @return
+     */
+    private String getOfferParamter(String goodsId) {
+        String paramter = new String();
+        String response = RequestUtil.sendGet(Constant.URL_GET_GOODS_INFO, "saleUri=" + goodsId, Constant.URL_SEND_CODE_HEADERS);
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSONObject.parseObject(response);
+            JSONObject sale = jsonObject.getJSONObject("data").getJSONObject("sale");
+            JSONArray jsonArray = sale.getJSONObject("bid").getJSONArray("bidList");
+            JSONObject priceJson = sale.getJSONObject("priceJson");
+            int increase = priceJson.getInteger("increase");
+            int lastBid = 0;
+            int bidPrice = increase;
+            if (jsonArray.size() > 0) {
+                lastBid = jsonArray.getJSONObject(0).getInteger("price");
+                bidPrice = lastBid + increase;
+            }
+
+            paramter = "saleUri=" + goodsId + "&bidPrice=" + bidPrice + "&lastBid=" + lastBid + "&__uuri=";
+        } catch (Exception e) {}
+
+        return paramter;
     }
 
     /**

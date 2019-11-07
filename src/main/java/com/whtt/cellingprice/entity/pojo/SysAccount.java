@@ -48,6 +48,11 @@ public class SysAccount extends Model<SysAccount> {
     private String loginInfo;
 
     /**
+     * 账号消息
+     */
+    private String msg;
+
+    /**
      * 创建账号的用户id
      */
     private Integer createId;

@@ -144,10 +144,4 @@ public class RequestUtil {
 
         return stringBuilder.toString();
     }
-
-    public static void main(String[] args) {
-        String response = RequestUtil.sendGet(Constant.URL_GET_ACCOUNT_INTO, "type=2&telephone=13333638809&verifyCode=9518&sc&wpjbPromoter", Constant.URL_SEND_CODE_HEADERS);
-        JSONObject jsonObject = JSONObject.parseObject(response);
-        System.out.println(jsonObject);
-    }
 }
