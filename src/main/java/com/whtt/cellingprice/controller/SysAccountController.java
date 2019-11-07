@@ -31,6 +31,15 @@ public class SysAccountController {
     private SysAccountService sysAccountService;
 
     /**
+     * 展现账号列表
+     * @return
+     */
+    @GetMapping("/showList")
+    public String showList() {
+        return "account/list";
+    }
+
+    /**
      * 分页搜索查询
      * @param page
      * @param size
