@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户充值</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" th:href="@{/static/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_tnyc012u2rlwstt9.css" media="all"/>
+    <style>
+        .layui-form-label{
+            width: 30%;
+        }
+        .layui-input{
+            width: 60%;
+        }
+    </style>
+</head>
+<body>
+
+<form class="layui-form">
+    <input type="hidden"  class="layui-input"  th:value="${customerInfo.id}" name="customerId">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label" >充值用户:</label>
+        <div class="layui-input-block" style="width: 80%">
+            <input type="text" readonly name="customerName" class="layui-input" th:value="${customerInfo.customerName}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label" >用户剩余积分:</label>
+        <div class="layui-input-block" style="width: 80%">
+            <input type="text" readonly name="balance" th:value="${customerInfo.integral}" class="layui-input" lay-verify="required">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label" >充值的积分(只能输入整数):</label>
+        <div class="layui-input-block" style="width: 80%">
+            <input type="number" name="integral" class="layui-input" lay-verify="required">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label" >用户充值的金额(可不填):</label>
+        <div class="layui-input-block" style="width: 80%">
+            <input type="text" name="money" class="layui-input" >
+        </div>
+    </div>
+
+    <div class="layui-form-item" style="padding-left: 30%;">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="addRecharge">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+</fieldset>
+
+</body>
+<script type="text/javascript" th:src="@{/static/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/admin/js/recharge/add.js}"></script>
+</html>

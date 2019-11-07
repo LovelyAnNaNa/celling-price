@@ -75,6 +75,25 @@ layui.use(['layer', 'form', 'table'], function () {
                   });
               }
           );
+      }else if(obj.event == 'recharge'){
+          addIndex = layer.open({
+              title: "修改积分",
+              type: 2,
+              area: ['80%', '100%'],//定义宽和高
+              content: "/admin/sysRecharge/add?customerId=" + data.id,
+              success: function (layero, addIndex) {
+                  setTimeout(function () {
+                      layer.tips('点击此处返回用户列表', '.layui-layer-setwin .layui-layer-close', {
+                          tips: 3
+                      });
+                  }, 500);
+              }
+          });
+          //改变窗口大小时，重置弹窗的高度，防止超出可视区域（如F12调出debug的操作）
+          $(window).resize(function () {
+              layer.full(addIndex);
+          });
+          layer.full(addIndex);
       }
     });
 

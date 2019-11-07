@@ -46,6 +46,8 @@ public class SysCustomerController {
     @ResponseBody
     @PostMapping(value = "/saveAdd")
     public Object saveAdd(@RequestBody SysCustomer newCustomer){
+        //判断用户
+
         boolean save = customerService.save(newCustomer);
         if(save){
             return CommonResult.success("保存用户失败,请稍后重试!");
