@@ -22,7 +22,7 @@ layui.use(['form', 'layer', 'jquery'], function () {
                         parent.location.reload();
                     });
                 } else {
-                    layer.msg(res.message);
+                    layer.msg(res.msg);
                 }
             }
         });

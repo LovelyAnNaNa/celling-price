@@ -39,14 +39,14 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
     /**
      * 新增账号
      *
-     * @param sysAccount
+     * @param account
      * @return
      */
     @Override
-    public CommonResult insert(SysAccount sysAccount) {
-        String phone = sysAccount.getPhone();
-        SysAccount account = selectByPhone(phone);
-        if (null != account) {
+    public CommonResult insert(SysAccount account) {
+        String phone = account.getPhone();
+        SysAccount temp = selectByPhone(phone);
+        if (null != temp) {
             return CommonResult.failed("手机号重复添加");
         }
 
@@ -243,11 +243,18 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
      * @return
      */
     @Override
-    public CommonResult offer(String url, String customerNumber) {
-        QueryWrapper<SysCustomer> queryWrapper = new QueryWrapper<SysCustomer>().eq("customerNumber", customerNumber);
-        SysCustomer customer = sysCustomerService.getById(queryWrapper);
+    public CommonResult offer(String url, String customerNumber, Integer type) {
+        if (1 == type || 2 == type) {
+            return CommonResult.failed("请选择正确类型");
+        }
+        QueryWrapper<SysCustomer> queryWrapper = new QueryWrapper<SysCustomer>().eq("customer_number", customerNumber);
+        SysCustomer customer = sysCustomerService.getOne(queryWrapper);
         if (null == customer) {
-            return CommonResult.failed("用户未录入系统");
+            return CommonResult.failed("请先开通账号");
+        }
+        boolean flag = sysCustomerService.checkIntegral(customerNumber, type);
+        if (flag) {
+            return CommonResult.failed("当前积分为：" + customer.getIntegral() + "，请充值");
         }
 
         String goodsId;
@@ -267,7 +274,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             return CommonResult.failed("请选择正确拍品");
         }
 
-        boolean flag = false;
+        flag = false;
         //查询可用账号
         List<SysAccount> accountList = baseMapper.selectList(new QueryWrapper<SysAccount>().eq("status", Constant.ACCOUNT_STATUS_LOGIN));
         for (SysAccount account : accountList) {

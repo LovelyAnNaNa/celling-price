@@ -1,9 +1,20 @@
-layui.use(['layer', 'form', 'table'], function () {
+layui.use(['layer', 'form', 'table','laydate'], function () {
     var layer = layui.layer,
         $ = layui.jquery,
         form = layui.form,
         table = layui.table,
+        laydate = layui.laydate,
         t;              //表格变量
+
+    //绑定日期控件
+    $(".datetime").each(function(index,ele){
+        //执行一个laydate实例
+        laydate.render({
+            elem: this, //指定元素
+            type: 'datetime'
+        });
+    })
+
     t = {
         elem: '#customer-table',
         even: true,
@@ -70,7 +81,7 @@ layui.use(['layer', 'form', 'table'], function () {
                               table.reload('customer-table', t);//重新刷新表格
                           });
                       } else {
-                          layer.msg(res.message);
+                          layer.msg(res.msg);
                       }
                   });
               }
