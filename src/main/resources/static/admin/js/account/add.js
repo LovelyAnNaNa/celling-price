@@ -17,21 +17,43 @@ layui.use('form', function(){
         }
         $.ajax({
             type: "GET",
-            url: "/sysAccount/getAccountCode",
+            url: "/sysAccount/getAccountCodeByPhone",
             dataType: "json",
-            contentType: "application/json",
             data: {
                 phone: phone
             },
             success: function (res) {
-                layer.close(loadIndex);
+                if (res.code == 200) {
+                    parent.layer.msg("请接收验证码", {time: 1000}, function () {
+                    });
+                } else {
+                    layer.msg(res.msg);
+                }
+            }
+        });
+    })
+
+
+    $("#saveAccount").click(function () {
+        var phone = $("#phone").val();
+        var id =$("#id").val();
+        var code = $("#code").val();
+        $.ajax({
+            type: "GET",
+            url: "/sysAccount/getAccountLoginInfo",
+            dataType: "json",
+            data: {
+                code: code,
+                id: id
+            },
+            success: function (res) {
                 if (res.code == 200) {
                     parent.layer.msg("账户登录成功", {time: 1000}, function () {
                         //刷新父页面
                         parent.location.reload();
                     });
                 } else {
-                    layer.msg(res.message);
+                    layer.msg(res.msg);
                 }
             }
         });
