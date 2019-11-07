@@ -9,11 +9,14 @@ import com.whtt.cellingprice.common.CommonResult;
 import com.whtt.cellingprice.common.Constant;
 import com.whtt.cellingprice.common.PageData;
 import com.whtt.cellingprice.entity.pojo.SysAccount;
+import com.whtt.cellingprice.entity.pojo.SysCustomer;
 import com.whtt.cellingprice.mapper.SysAccountMapper;
 import com.whtt.cellingprice.service.SysAccountService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.whtt.cellingprice.service.SysCustomerService;
 import com.whtt.cellingprice.util.RequestUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,6 +32,9 @@ import java.util.List;
  */
 @Service
 public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAccount> implements SysAccountService {
+
+    @Autowired
+    private SysCustomerService sysCustomerService;
 
     /**
      * 新增账号
@@ -238,8 +244,13 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
      */
     @Override
     public CommonResult offer(String url, String customerNumber) {
-        String goodsId;
+        QueryWrapper<SysCustomer> queryWrapper = new QueryWrapper<SysCustomer>().eq("customerNumber", customerNumber);
+        SysCustomer customer = sysCustomerService.getById(queryWrapper);
+        if (null == customer) {
+            return CommonResult.failed("用户未录入系统");
+        }
 
+        String goodsId;
         try {
             int index = url.lastIndexOf("/") + 1;
             int index2 = url.indexOf("?");
