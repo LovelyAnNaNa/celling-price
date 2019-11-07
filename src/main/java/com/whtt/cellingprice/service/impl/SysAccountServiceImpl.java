@@ -1,5 +1,6 @@
 package com.whtt.cellingprice.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -162,22 +163,74 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
     }
 
     /**
-     * 获取用户登录信息
+     * 获取账号验证码
      *
      * @param id
      * @return
      */
     @Override
-    public CommonResult getAccountLoginInfo(Integer id) {
+    public CommonResult getAccountCode(Integer id) {
         SysAccount account = baseMapper.selectById(id);
         if (null == account) {
             return CommonResult.failed("账号不存在");
         }
         String phone = account.getPhone();
-        //请求获取验证码
         String response = RequestUtil.sendGet(Constant.URL_SEND_CODE, "type=sms&telephone=" + phone, Constant.URL_SEND_CODE_HEADERS);
 
-        return null;
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSONObject.parseObject(response);
+            if (getResponseCode(jsonObject)) {
+                return CommonResult.failed(jsonObject.getString("msg"));
+            }
+
+        } catch (Exception e) {
+            return CommonResult.failed();
+        }
+
+        return CommonResult.success();
+    }
+
+    /**
+     * 获取账号信息
+     *
+     * @param id
+     * @param code
+     * @return
+     */
+    @Override
+    public CommonResult getAccountLoginInfo(Integer id, String code) {
+        SysAccount account = baseMapper.selectById(id);
+        if (null == account) {
+            return CommonResult.failed("账号不存在");
+        }
+        String phone = account.getPhone();
+        String response = RequestUtil.sendGet(Constant.URL_GET_ACCOUNT_INTO, "type=2&telephone=" + phone + "&verifyCode=" + code + "&sc&wpjbPromoter", Constant.URL_SEND_CODE_HEADERS);
+
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSONObject.parseObject(response);
+            if (getResponseCode(jsonObject)) {
+                return CommonResult.failed(jsonObject.getString("msg"));
+            }
+
+            JSONObject data = jsonObject.getJSONObject("data");
+            account.setLoginInfo(data.toJSONString());
+            account.setStatus(Constant.ACCOUNT_STATUS_LOGIN);
+        } catch (Exception e) {
+            return CommonResult.failed();
+        }
+
+        return CommonResult.success();
+    }
+
+    private boolean getResponseCode(JSONObject jsonObject) {
+        Integer respCode = jsonObject.getInteger("code");
+        if (0 != respCode) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

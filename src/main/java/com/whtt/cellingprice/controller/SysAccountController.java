@@ -43,12 +43,23 @@ public class SysAccountController {
     }
 
     /**
-     * 查询账号登录信息
+     * 获取账号验证码
      * @param id
      * @return
      */
-    public CommonResult getAccountLoginInfo(@NotNull(message = "请选择账号") Integer id) {
-        return sysAccountService.getAccountLoginInfo(id);
+    @GetMapping("/getAccountCode")
+    public CommonResult getAccountCode(@NotNull(message = "请选择账号") Integer id) {
+        return sysAccountService.getAccountCode(id);
+    }
+
+    /**
+     * 获取账号登录信息
+     * @param id
+     * @param code
+     * @return
+     */
+    public CommonResult getAccountLoginInfo(@NotNull(message = "请选择账号") Integer id, String code) {
+        return sysAccountService.getAccountLoginInfo(id, code);
     }
 
     /**

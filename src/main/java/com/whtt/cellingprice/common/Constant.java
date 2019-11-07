@@ -26,6 +26,11 @@ public class Constant {
     public final static String URL_SEND_CODE = "https://api.weipaitang.com/app/v1.0/user/send-code";
 
     /**
+     * 发送验证码url
+     */
+    public final static String URL_GET_ACCOUNT_INTO = "https://api.weipaitang.com/app/v1.0/user/login";
+
+    /**
      * 发送验证码请求他
      */
     public final static Map<String, String> URL_SEND_CODE_HEADERS = new HashMap<>();

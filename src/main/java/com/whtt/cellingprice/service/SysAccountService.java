@@ -64,9 +64,17 @@ public interface SysAccountService extends IService<SysAccount> {
     CommonResult update(SysAccount sysAccount);
 
     /**
-     * 获取用户登录信息
+     * 获取账号验证码
      * @param id
      * @return
      */
-    CommonResult getAccountLoginInfo(Integer id);
+    CommonResult getAccountCode(Integer id);
+
+    /**
+     * 获取账号信息
+     * @param id
+     * @param code
+     * @return
+     */
+    CommonResult getAccountLoginInfo(Integer id, String code);
 }
