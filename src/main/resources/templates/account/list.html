@@ -44,34 +44,6 @@
     <div id="page"></div>
 </div>
 
-<div id="saveAccountDiv">
-    <div class="layui-form-item">
-        <div class="layui-inline">
-            <label class="layui-form-label">手机号</label>
-            <div class="layui-input-block">
-                <input type="text" id="phone" name="phone" required lay-verify="required|phone" class="layui-input">
-            </div>
-        </div>
-    </div>
-
-    <div class="layui-form-item">
-        <label class="layui-form-label">验证码</label>
-        <div class="layui-input-inline">
-            <input type="text" name="code" class="layui-input">
-        </div>
-        <div class="layui-form-mid layui-word-aux">
-            <button class="layui-btn layui-btn-xs" style="height: 30px;" id="getCode">获取验证码</button>
-        </div>
-    </div>
-
-<div class="layui-form-item">
-        <div class="layui-input-block">
-            <button class="layui-btn" id="saveAccount">保存</button>
-        </div>
-    </div>
-</div>
-
-
 </body>
 <script type="text/javascript" th:src="@{/static/layui/layui.js}"></script>
 <script type="text/javascript" th:src="@{/static/admin/js/account/list.js}"></script>

@@ -39,6 +39,16 @@ public class SysAccountController {
         return "account/list";
     }
 
+
+    /**
+     * 展现账号列表
+     * @return
+     */
+    @GetMapping("/add")
+    public String add() {
+        return "account/add";
+    }
+
     /**
      * 分页搜索查询
      * @param page

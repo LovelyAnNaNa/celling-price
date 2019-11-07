@@ -32,21 +32,30 @@ layui.use('form', function(){
     })
 
     var active = {
-        addAccount : function () {
-        }
-    }
+        addAccount: function () {
+            addIndex = layer.open({
+                title: "账户登录",
+                type: 2,
+                area: ['80%', '100%'],//定义宽和高
+                content: "/sysAccount/add",
+                success: function (layero, addIndex) {
+                    setTimeout(function () {
+                        layer.tips('点击此处返回用户列表', '.layui-layer-setwin .layui-layer-close', {
+                            tips: 3
+                        });
+                    }, 500);
+                }
+            });
+            //改变窗口大小时，重置弹窗的高度，防止超出可视区域（如F12调出debug的操作）
+            $(window).resize(function () {
+                layer.full(addIndex);
+            });
+            layer.full(addIndex);
+        },
+    };
 
     $('.layui-inline .layui-btn').on('click', function () {
         var type = $(this).data('type');
         active[type] ? active[type].call(this) : '';
     });
-
-    $("#getCode").click(function () {
-        var phone = $("#phone").val();
-        if (phone.replace(/(^s*)|(s*$)/g, "").length == 0 || phone.length != 13) {
-            layer.msg('请输入正确手机号');
-            return;
-        }
-
-    })
 });
