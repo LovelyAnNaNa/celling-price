@@ -135,10 +135,10 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
     public PageData listByPageAndSearch(Integer page, Integer size, Integer status, String keyword) {
         QueryWrapper<SysAccount> queryWrapper = new QueryWrapper<>();
         if (null != status) {
-            queryWrapper.eq("status", status).or();
+            queryWrapper.like("status", status).or();
         }
         if (StringUtils.isNotBlank(keyword)) {
-            queryWrapper.eq("phone", keyword).or().eq("msg", keyword);
+            queryWrapper.like("phone", keyword).or().like("msg", keyword);
         }
 
         IPage<SysAccount> iPage = page(new Page<>(page, size), queryWrapper);
