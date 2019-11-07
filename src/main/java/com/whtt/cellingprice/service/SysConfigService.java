@@ -17,6 +17,6 @@ import java.util.List;
  */
 public interface SysConfigService extends IService<SysConfig> {
 
-    int updateConfig(List<SysConfig> configList);
+    void updateConfig(List<SysConfig> configList);
 
 }

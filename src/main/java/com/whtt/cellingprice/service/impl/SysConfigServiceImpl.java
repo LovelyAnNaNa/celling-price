@@ -26,10 +26,17 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     private SysConfigMapper configMapper;
 
     @Override
-    public int updateConfig(List<SysConfig> configList) {
+    public void updateConfig(List<SysConfig> configList) {
         configList.forEach(config -> {
             configMapper.updateById(config);
+            //如果更改的是顶价成功扣除的积分
+            if("celling_integral".equals(config.getConfigKey())){
+                DataConfig.cellingIntegral = Integer.valueOf(config.getConfigValue());
+            }
+            //如果更改的是违约扣除的积分
+            if("violate_integral".equals(config.getConfigKey())){
+                DataConfig.violateIntegral = Integer.valueOf(config.getConfigValue());
+            }
         });
-        return 0;
     }
 }

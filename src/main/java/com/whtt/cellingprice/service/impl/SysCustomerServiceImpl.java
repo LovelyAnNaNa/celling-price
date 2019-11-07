@@ -1,6 +1,9 @@
 package com.whtt.cellingprice.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.whtt.cellingprice.common.Constant;
 import com.whtt.cellingprice.config.DataConfig;
 import com.whtt.cellingprice.entity.pojo.SysCustomer;
 import com.whtt.cellingprice.entity.pojo.SysOrder;
@@ -8,10 +11,12 @@ import com.whtt.cellingprice.mapper.SysCustomerMapper;
 import com.whtt.cellingprice.service.SysCustomerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.whtt.cellingprice.service.SysOrderService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,6 +34,32 @@ public class SysCustomerServiceImpl extends ServiceImpl<SysCustomerMapper, SysCu
     private SysOrderService orderService;
     @Resource
     private SysCustomerMapper customerMapper;
+
+    @Override
+    public List<SysCustomer> getCustomerList(Integer page, Integer limit, String customerName, String rangeIntegral, String startTime, String endTime) {
+        QueryWrapper<SysCustomer> customerQueryWrapper = new QueryWrapper<>();
+        //用户名模糊查询
+        if(StringUtils.isNotBlank(customerName)){
+            customerQueryWrapper.like("customer_name",customerName);
+        }
+        //价格区间
+        if(StringUtils.isNotBlank(rangeIntegral)){
+            String[] range = rangeIntegral.split("-");
+            if(range.length == 2){
+                customerQueryWrapper.between("integral",range[0],range[1]);
+            }
+        }
+        //根据用户添加时间查询
+        if(StringUtils.isNotBlank(startTime)){
+            //如果没有终止时间,默认当前时间为终止事件
+            if(StringUtils.isBlank(endTime)) {
+                endTime = DateUtil.format(new Date(), Constant.FORMAT_DATE_TIME);
+            }
+            customerQueryWrapper.between("create_time",startTime,endTime);
+        }
+        PageHelper.startPage(page,limit);
+        return customerMapper.selectList(customerQueryWrapper);
+    }
 
     @Override
     public SysCustomer getByCustomernumber(String customerNumber) {

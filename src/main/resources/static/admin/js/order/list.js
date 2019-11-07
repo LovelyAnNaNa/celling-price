@@ -72,7 +72,7 @@ layui.use(['layer', 'form', 'table','laydate'], function () {
                                 table.reload('order-table', t);//重新刷新表格
                             });
                         } else {
-                            layer.msg(res.message);
+                            layer.msg(res.msg);
                         }
                     });
                 }
@@ -80,6 +80,7 @@ layui.use(['layer', 'form', 'table','laydate'], function () {
         }
     });
 
+    //绑定日期控件
     $(".datetime").each(function(index,ele){
         //执行一个laydate实例
         laydate.render({

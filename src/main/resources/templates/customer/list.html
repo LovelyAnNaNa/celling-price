@@ -23,6 +23,12 @@
             <div class="layui-inline">
                 <input type="text" value="" name="rangeIntegral" placeholder="积分区间,如(10-20)" class="layui-input search_input">
             </div>
+            <div class="layui-inline">
+                <input type="text" value="" name="startTime" placeholder="起始时间" class="layui-input search_input datetime">
+            </div>
+            <div class="layui-inline">
+                <input type="text" value="" name="endTime" placeholder="结束时间" class="layui-input search_input datetime">
+            </div>
             <div class="layui-input-inline">
                 <a class="layui-btn" lay-submit="" lay-filter="searchForm">查询</a>
             </div>
@@ -37,8 +43,8 @@
     <table class="layui-table" id="customer-table" lay-filter="customerList"></table>
 </div>
 <script type="text/html" id="customerBar">
-    <a class="layui-btn layui-btn-xs" lay-event="del">删除</a>
     <a class="layui-btn layui-btn-xs" lay-event="recharge">修改积分</a>
+    <a class="layui-btn layui-btn-xs layui-bg-red" lay-event="del">删除</a>
 </script>
 
 </body>

@@ -15,7 +15,8 @@ import java.util.List;
  */
 public interface SysRechargeService extends IService<SysRecharge> {
 
-    List<SysRecharge> getRechargeList(Integer page,Integer limit,String customerName,String rangeIntegral);
+    List<SysRecharge> getRechargeList(Integer page,Integer limit,String customerName,String rangeIntegral,
+                                      String startTime,String endTime);
 
     //获取级联对象信息
     List<SysRecharge> getCascadeInfo(List<SysRecharge> rechargeList);

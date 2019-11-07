@@ -42,9 +42,11 @@ public class SysRechargeController {
     @PostMapping(value = "/list")
     public Object list(@RequestParam(value = "page",required = false) Integer page,@RequestParam(value = "limit",required = false) Integer limit,
                        @RequestParam(value = "customerName",required = false) String customerName,
-                       @RequestParam(value = "rangeIntegral",required = false) String rangeIntegral){
+                       @RequestParam(value = "rangeIntegral",required = false) String rangeIntegral,
+                       @RequestParam(value = "startTime",required = false) String startTime,
+                       @RequestParam(value = "endTime",required = false) String endTime){
         //获取充值列表
-        List<SysRecharge> rechargeList = rechargeService.getRechargeList(page,limit,customerName,rangeIntegral);
+        List<SysRecharge> rechargeList = rechargeService.getRechargeList(page,limit,customerName,rangeIntegral,startTime,endTime);
 
         //封装为layui表格可以解析的对象
         PageData<SysRecharge> pageData = new PageData<>(rechargeList);
