@@ -32,12 +32,29 @@ public class SysCustomerController {
     @Autowired
     private SysCustomerService customerService;
 
+    //检查用户的积分
+    @ResponseBody
+    @PostMapping(value = "/checkIntegral")
+    public Object checkIntegral(@RequestParam @NotBlank(message = "用户账号不能为空") String customerNumber
+                ,@RequestParam @NotNull Integer status){
+        boolean result = customerService.checkIntegral(customerNumber, status);
+        return CommonResult.success(result);
+    }
 
+
+    /**
+     *
+     * @param commodity 商品信息(随意)
+     * @param customernumber 用户账号
+     * @param status 状态,1顶价成功,2用户违约
+     * @return
+     */
     @ResponseBody
     @PostMapping(value = "/onOrder")
-    public Object onOrder(@RequestParam String commodity,
-                        @RequestParam @NotBlank(message = "用户账号不能为空!") String customernumber){
-        customerService.addOrder(commodity,customernumber);
+    public Object onOrder(@RequestParam(required = false) String commodity,
+                        @RequestParam @NotBlank(message = "用户账号不能为空!") String customernumber,
+                          @RequestParam @NotNull(message = "订单状态不能为空!")Integer status){
+        customerService.addOrder(commodity,customernumber,status);
         return CommonResult.success();
     }
 
@@ -98,7 +115,7 @@ public class SysCustomerController {
 
     @GetMapping(value = "/add")
     public String add(){
-          return "customer/add";
+        return "customer/add";
     }
 
     @GetMapping

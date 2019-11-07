@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface SysOrderService extends IService<SysOrder> {
 
-    List<SysOrder> getOrderList(Integer page,Integer limit,String customerName,String rangeIntegral);
+    List<SysOrder> getOrderList(Integer page,Integer limit,String customerName,String rangeIntegral,Integer status);
 
     List<SysOrder> getCascadeInfo(List<SysOrder> orderList);
 }

@@ -19,12 +19,26 @@ public class DataConfig implements InitializingBean {
     private SysConfigService configService;
 
     //每次顶价成功时扣除的积分
-    public static Integer deductIntegral;
+    public static Integer cellIntegral;
+    //用户违约所需扣除的积分
+    public static Integer violateIntegral;
+
+    public static Integer getDeductIntegral(int status){
+        if(status == 1){
+            return cellIntegral;
+        }
+        if(status == 2){
+            return violateIntegral;
+        }
+        return null;
+    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
         SysConfig deductConfig = configService.getOne(new QueryWrapper<SysConfig>().eq("config_key", "deduct_integral"));
-        deductIntegral = Integer.valueOf(deductConfig.getConfigValue());
+        cellIntegral = Integer.valueOf(deductConfig.getConfigValue());
 
+        SysConfig violateConfig = configService.getOne(new QueryWrapper<SysConfig>().eq("config_key", "violate_integral"));
+        violateIntegral = Integer.valueOf(violateConfig.getConfigValue());
     }
 }

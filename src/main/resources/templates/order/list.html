@@ -22,7 +22,21 @@
                 <input type="text" value="" name="customerName" placeholder="可以输入用户名" class="layui-input search_input">
             </div>
             <div class="layui-inline">
-                <input type="text" value="" name="rangeIntegral" placeholder="积分区间,如(10-20)" class="layui-input search_input">
+                <input type="text" value="" name="rangeIntegral" placeholder="扣除的积分,如(10-20)" class="layui-input search_input">
+            </div>
+            <div class="layui-inline">
+                <input type="text" value="" name="startTime" placeholder="起始时间" class="layui-input search_input ">
+            </div>
+            <div class="layui-inline">
+                <input type="text" value="" name="endTime" placeholder="结束时间" class="layui-input search_input datetime">
+            </div>
+            <div class="layui-inline">
+                <select name="status">
+                    <option value="">请选择订单状态</option>
+                    <option value="0">未完成</option>
+                    <option value="1">顶价成功</option>
+                    <option value="2">用户违约</option>
+                </select>
             </div>
             <div class="layui-input-inline">
                 <a class="layui-btn" lay-submit="" lay-filter="searchForm">查询</a>
@@ -37,9 +51,11 @@
 
 <script type="text/html" id="orderStatus">
     {{# if(d.status == 1) { }}
-    <span class="layui-badge layui-bg-green" >已完成</span>
+        <span class="layui-badge layui-bg-green" >顶价成功</span>
+    {{# }else if(d.status == 2){ }}
+        <span class="layui-badge layui-bg-red" >用户违约</span>
     {{# }else{ }}
-    <span class="layui-badge layui-bg-gray" >未完成</span>
+        <span class="layui-badge layui-bg-gray" >未完成</span>
     {{# }  }}
 </script>
 

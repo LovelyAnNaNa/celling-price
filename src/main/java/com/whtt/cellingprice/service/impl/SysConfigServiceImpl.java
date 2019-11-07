@@ -35,7 +35,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
             return false;
         }
         //更改配置类中的信息
-        DataConfig.deductIntegral = deductIntegral;
+        DataConfig.cellIntegral = deductIntegral;
         return true;
     }
 }

@@ -1,14 +1,19 @@
 package com.whtt.cellingprice.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.whtt.cellingprice.entity.pojo.SysCustomer;
 import com.whtt.cellingprice.entity.pojo.SysOrder;
 import com.whtt.cellingprice.mapper.SysOrderMapper;
 import com.whtt.cellingprice.service.SysCustomerService;
 import com.whtt.cellingprice.service.SysOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,8 +33,39 @@ public class SysOrderServiceImpl extends ServiceImpl<SysOrderMapper, SysOrder> i
     private SysCustomerService customerService;
 
     @Override
-    public List<SysOrder> getOrderList(Integer page, Integer limit, String customerName, String rangeIntegral) {
-        return null;
+    public List<SysOrder> getOrderList(Integer page, Integer limit, String customerName, String rangeIntegral,Integer status) {
+        QueryWrapper<SysOrder> orderQueryWrapper = new QueryWrapper<>();
+        //判断是否有用户名作为条件
+        if(StringUtils.isNotBlank(customerName)){
+            //用户列表
+            List<SysCustomer> customerList = customerService.getByFuzzyCustomername(customerName);
+            if(customerList != null && customerList.size() > 0){
+                //根据用户id查询
+                ArrayList<Integer> idList = new ArrayList<>();
+                customerList.forEach(customer -> idList.add(customer.getId()));
+                orderQueryWrapper.in("customer_id",idList);
+            }else{
+                //如果根据用户名模糊查询不到信息,直接返回空集合
+                return new ArrayList(0);
+            }
+        }
+
+        //根据积分的价格区间查询
+        if(StringUtils.isNotBlank(rangeIntegral)){
+            String[] integral = rangeIntegral.split("-");
+            if(integral != null && integral.length == 2){
+                orderQueryWrapper.between("deduct_integral",integral[0],integral[1]);
+            }
+        }
+
+        if(status != null){
+            orderQueryWrapper.eq("status",status);
+        }
+
+        PageHelper.startPage(page,limit);
+        List<SysOrder> orderList = orderMapper.selectList(orderQueryWrapper);
+        getCascadeInfo(orderList);
+        return orderList;
     }
 
     @Override

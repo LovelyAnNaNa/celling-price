@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class SysRechargeServiceImpl extends ServiceImpl<SysRechargeMapper, SysRe
         //根据充值的用户查询
         if(StringUtils.isNotBlank(customerName)){
             //模糊查询和用户名相像的用户
-            List<SysCustomer> customerList = customerService.list(new QueryWrapper<SysCustomer>().like("customer_name", customerName));
+            List<SysCustomer> customerList = customerService.getByFuzzyCustomername(customerName);
             if(customerList != null && customerList.size() > 0){
                 ArrayList<Integer> idList = new ArrayList<Integer>(customerList.size());
                 customerList.forEach(customer -> idList.add(customer.getId()));
