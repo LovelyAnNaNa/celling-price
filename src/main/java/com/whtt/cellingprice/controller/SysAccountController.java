@@ -39,6 +39,16 @@ public class SysAccountController {
         return "account/list";
     }
 
+
+    /**
+     * 展现新增账号
+     * @return
+     */
+    @GetMapping("/add")
+    public String add() {
+        return "account/add";
+    }
+
     /**
      * 分页搜索查询
      * @param page
@@ -64,6 +74,17 @@ public class SysAccountController {
     @GetMapping("/getAccountCode")
     public CommonResult getAccountCode(@NotNull(message = "请选择账号") Integer id) {
         return sysAccountService.getAccountCode(id);
+    }
+
+    /**
+     * 获取账号验证码
+     * @param phone
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("/getAccountCodeByPhone")
+    public CommonResult getAccountCodeByPhone(@NotNull(message = "请输入正确手机号") String phone) {
+        return sysAccountService.getAccountCode(phone);
     }
 
     /**

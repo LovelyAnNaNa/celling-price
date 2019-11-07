@@ -71,6 +71,13 @@ public interface SysAccountService extends IService<SysAccount> {
     CommonResult getAccountCode(Integer id);
 
     /**
+     * 根据手机号获取验证码
+     * @param phone
+     * @return
+     */
+    CommonResult getAccountCode(String phone);
+
+    /**
      * 获取账号信息
      * @param id
      * @param code
