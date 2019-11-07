@@ -32,6 +32,23 @@ public class SysCustomerController {
     @Autowired
     private SysCustomerService customerService;
 
+
+    @ResponseBody
+    @PostMapping(value = "/onOrder")
+    public Object onOrder(@RequestParam String commodity,
+                        @RequestParam @NotBlank(message = "用户账号不能为空!") String customernumber){
+        customerService.addOrder(commodity,customernumber);
+        return CommonResult.success();
+    }
+
+    //根据用户号获取用户信息
+    @ResponseBody
+    @PostMapping(value = "/customerInfo")
+    public Object customerInfo(@RequestParam @NotBlank(message = "用户账号不能为空!") String customernumber){
+        SysCustomer customerInfo = customerService.getByCustomernumber(customernumber);
+        return CommonResult.success(customerInfo);
+    }
+
     //删除一条用户信息
     @ResponseBody
     @PostMapping(value = "/del")
@@ -46,7 +63,6 @@ public class SysCustomerController {
     @ResponseBody
     @PostMapping(value = "/saveAdd")
     public Object saveAdd(@RequestBody SysCustomer newCustomer){
-        //判断用户
 
         boolean save = customerService.save(newCustomer);
         if(save){

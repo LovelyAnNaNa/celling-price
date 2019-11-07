@@ -8,7 +8,6 @@ layui.use(['form', 'layer', 'jquery'], function () {
         var loadIndex = layer.load(2, {
             shade: [0.3, '#333']
         });
-        alert(JSON.stringify(data.field));
         $.ajax({
             type: "POST",
             url: "/admin/sysRecharge/saveAdd",

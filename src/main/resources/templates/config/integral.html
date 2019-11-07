@@ -11,6 +11,15 @@
     <meta name="format-detection" content="telephone=no">
     <link rel="stylesheet" th:href="@{/static/layui/css/layui.css}" media="all"/>
     <link rel="stylesheet" href="//at.alicdn.com/t/font_tnyc012u2rlwstt9.css" media="all"/>
+    <style>
+        .layui-form-label {
+            width: 30%;
+        }
+
+        .layui-input {
+            width: 60%;
+        }
+    </style>
 </head>
 <body>
 
@@ -18,19 +27,19 @@
     <legend>积分设置</legend>
     <div class="layui-row">
         <div class="layui-form">
-            <div class="layui-form-item dataEle" >
-                <label class="layui-form-label" >每次顶价所需的积分:</label>
-                <input class="config_key" hidden />
+            <div class="layui-form-item dataEle">
+                <label class="layui-form-label">每次顶价所需的积分:</label>
+                <input class="config_key" hidden/>
                 <div class="layui-input-block">
                     <input type="text" hidden class="id" id="deductConfigId" th:value="${config.id}">
                     <input type="text" class="layui-input" id="configValue" th:value="${config.configValue}">
                 </div>
             </div>
-                <div class="layui-form-item">
-                    <div class="layui-input-block">
-                        <button class="layui-btn" id="save">保存</button>
-                    </div>
+            <div class="layui-form-item" style="padding-left: 30%;">
+                <div class="layui-input-block">
+                    <button class="layui-btn" id="save">保存</button>
                 </div>
+            </div>
         </div>
     </div>
 </fieldset>
