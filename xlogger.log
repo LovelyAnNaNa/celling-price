@@ -1,0 +1,8 @@
+2019-11-06 17:54:00.612 | W | Thread-0 | chatapi-wechat | 登录异常
+String index out of range: -7
+java.lang.String.substring(String.java:1967)
+me.xuxiaoxiao.chatapi.wechat.WeChatApi.webwxnewloginpage(WeChatApi.java:108)
+me.xuxiaoxiao.chatapi.wechat.WeChatClient$WeChatThread.login(WeChatClient.java:729)
+me.xuxiaoxiao.chatapi.wechat.WeChatClient$WeChatThread.run(WeChatClient.java:679)
+2019-11-06 17:54:00.612 | E | Thread-0 | chatapi-wechat | 登录出现错误：登陆异常
+2019-11-06 17:55:06.143 | W | Thread-0 | chatapi-wechat | 停止监听信息：1101
