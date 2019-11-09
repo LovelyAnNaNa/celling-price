@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotBlank;
 
 /**
  * <p>
@@ -27,7 +29,7 @@ public class SysUserController {
     @RequestMapping(value = "/login")
     public  Object login(@RequestParam(value = "username",required = false) String username,@RequestParam(value = "password",required = false) String password){
         System.out.println(username);
-        if (sysUserService.selectLogin(username,password)==0){
+        if (sysUserService.selectLogin(username,password).isEmpty()){
                 return CommonResult.failed("用户名或密码输入有误");
         }else {
             return CommonResult.success("登录成功");
@@ -36,20 +38,23 @@ public class SysUserController {
 
     @ResponseBody
     @RequestMapping(value = "/changePassword")
-    public  Object changePassword(HttpServletRequest request){
-        String username= request.getParameter("username");
-        String password=request.getParameter("password");
+    public  Object changePassword(@RequestParam(value = "username",required = false) String username,@RequestParam(value = "password",required = false)String password){
         if (sysUserService.changePassword(username,password)!=0){
             return CommonResult.success("更改密码成功");
         }else {
             return CommonResult.failed("更改密码失败");
         }
     }
+    @GetMapping(value = "/index")
+    public String index() {
+            return "/index";
+        }
+
     @GetMapping(value = "/login")
     public String login(){
-        return "/jurisdiction_login";
+        return "/login";
     }
-    @GetMapping(value = "/forget-password")
+    @GetMapping(value = "/forgetPassword")
     public String forgetPassword(){
         return "/forget-password";
     }

@@ -1,6 +1,7 @@
 package com.whtt.cellingprice.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.whtt.cellingprice.entity.pojo.SysUser;
 import com.whtt.cellingprice.mapper.SysUserMapper;
@@ -26,10 +27,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private  SysUserMapper sysUserMapper;
 
     @Override
-    public int selectLogin(String username, String password) {
-        LambdaQueryWrapper<SysUser> queryWrapper= Wrappers.<SysUser>lambdaQuery();
-          queryWrapper.eq(SysUser::getUsername,username).lt(SysUser::getPassword,password);
-          return sysUserMapper.selectCount(queryWrapper);
+    public List selectLogin(String username, String password) {
+        QueryWrapper<SysUser> queryWrapper= new QueryWrapper<SysUser>();
+          queryWrapper.eq("username",username).eq("password",password);
+
+
+          return sysUserMapper.selectList(queryWrapper);
     }
 
     @Override

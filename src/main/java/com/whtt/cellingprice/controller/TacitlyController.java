@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class TacitlyController {
     @GetMapping(value = "/")
     public String login(){
-        return "/jurisdiction_login";
+        return "/login";
     }
+
 }

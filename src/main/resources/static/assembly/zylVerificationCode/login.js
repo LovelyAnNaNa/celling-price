@@ -34,7 +34,7 @@ layui.use(['carousel', 'form','jquery'], function(){
                     },
                 success: function (info) {
                     if (info.code==200) {
-                        window.location.href="/sysUser/forget-password";
+                        window.location.href="/sysUser/index";
                     }else {
                         layer.msg(info.msg);
                     }
