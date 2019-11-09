@@ -47,7 +47,7 @@ public class SysUserController {
             return CommonResult.failed("更改密码失败");
         }
     }
-    @GetMapping(value = "/jurisdiction_login")
+    @GetMapping(value = "/login")
     public String login(){
         return "/jurisdiction_login";
     }
