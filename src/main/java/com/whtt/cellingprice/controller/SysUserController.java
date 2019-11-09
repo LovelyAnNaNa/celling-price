@@ -48,7 +48,7 @@ public class SysUserController {
     @GetMapping(value = "/index")
     public String index() {
             return "/index";
-        }
+    }
 
     @GetMapping(value = "/login")
     public String login(){
