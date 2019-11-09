@@ -1,9 +1,9 @@
 package com.whtt.cellingprice.controller;
 
 
+import com.whtt.cellingprice.common.CommonResult;
 import com.whtt.cellingprice.entity.pojo.SysUser;
 import com.whtt.cellingprice.service.SysUserService;
-import com.whtt.cellingprice.tool.CommonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -25,11 +25,9 @@ public class SysUserController {
     private SysUserService sysUserService;
     @ResponseBody
     @RequestMapping(value = "/login")
-    public  Object login(HttpServletRequest request){
-        String username= request.getParameter("username");
-        String password=request.getParameter("password");
+    public  Object login(@RequestParam(value = "username",required = false) String username,@RequestParam(value = "password",required = false) String password){
         System.out.println(username);
-        if (sysUserService.selectLogin(username,password).equals(null)){
+        if (sysUserService.selectLogin(username,password)==0){
                 return CommonResult.failed("用户名或密码输入有误");
         }else {
             return CommonResult.success("登录成功");

@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface SysUserService extends IService<SysUser> {
 
-    List selectLogin(String username, String password);
+    int selectLogin(String username, String password);
 
     int changePassword(String username,String password);
 }

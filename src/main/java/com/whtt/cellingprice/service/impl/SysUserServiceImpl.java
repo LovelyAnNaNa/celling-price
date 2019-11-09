@@ -25,11 +25,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Resource
     private  SysUserMapper sysUserMapper;
 
-      @Override
-    public List selectLogin(String username, String password) {
+    @Override
+    public int selectLogin(String username, String password) {
         LambdaQueryWrapper<SysUser> queryWrapper= Wrappers.<SysUser>lambdaQuery();
-        queryWrapper.like(SysUser::getUsername,username).lt(SysUser::getPassword,password);
-        return sysUserMapper.selectList(queryWrapper);
+          queryWrapper.eq(SysUser::getUsername,username).lt(SysUser::getPassword,password);
+          return sysUserMapper.selectCount(queryWrapper);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUser.setUsername(username);
         sysUser.setPassword(password);
         LambdaQueryWrapper<SysUser> queryWrapper= Wrappers.<SysUser>lambdaQuery();
-        queryWrapper.like(SysUser::getUsername,username);
+        queryWrapper.eq(SysUser::getUsername,username);
         return sysUserMapper.update(sysUser,queryWrapper);
     }
 
