@@ -25,15 +25,35 @@ layui.use(['layer', 'form', 'table','laydate'], function () {
             {field: 'integral', title: '充值积分',align:'center'},
             {field: 'money', title: '充值金额',align:'center'},
             {field: 'createTime', title: '充值时间',align:'center'},
-            // {title: '操作', fixed: 'right', align: 'center', toolbar: '#customerBar'}
+            {title: '操作', fixed: 'right', align: 'center', toolbar: '#rechargeBar'}
         ]]
         ,
         done: function () {
-            $("[data-field='id']").css('display','none');
+            // $("[data-field='id']").css('display','none');
             // $('table.layui-table thead tr th:eq(1)').addClass('layui-hide');
         }
     };
     table.render(t);
+
+    table.on('tool(rechargeList)', function (obj) {
+        var data = obj.data;
+        if(obj.event == 'del'){
+            layer.confirm("您确定要删除该条充值记录吗?", {title:'删除记录',btn: ['是的,我确定', '不,我在想想']},
+                function () {
+                    $.post("/admin/sysRecharge/del", {"rechargeId": data.id}, function (res) {
+                        var code = res.code;
+                        if (200 == code) {
+                            layer.msg("删除成功!", {time: 1000}, function () {
+                                table.reload('recharge-table', t);//重新刷新表格
+                            });
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    });
+                }
+            );
+        }
+    });
 
     //绑定日期控件
     $(".datetime").each(function(index,ele){

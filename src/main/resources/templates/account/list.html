@@ -36,7 +36,7 @@
     <table class="layui-table" id="accountTable" lay-filter="accountList"></table>
 
     <script type="text/html" id="accountBar">
-        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+<!--        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>-->
         <a class="layui-btn layui-btn-xs" lay-event="login">登录</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     </script>
@@ -44,7 +44,30 @@
     <div id="page"></div>
 </div>
 
+<script type="text/html" id="status">
+    {{# if(d.status == 0) { }}
+    <span class="layui-badge layui-bg-gray" >未登录</span>
+    {{# }else if(d.status == 1){ }}
+    <span class="layui-badge layui-bg-green" >已登录</span>
+    {{# }else{ }}
+    <span class="layui-badge layui-bg-red" >失效</span>
+    {{# }  }}
+</script>
+
 </body>
+<div id="addPhone" hidden class="layui-form-item" >
+    <label class="layui-form-label">手机号：</label>
+    <div class="layui-input-inline">
+        <input type="text" id="phone" name="phone" class="layui-input">
+    </div>
+    <div class="layui-input-inline" style="padding-left: 40%;padding-top: 10px" >
+        <button class="layui-btn " id="saveAccount">提交</button>
+    </div>
+</div>
 <script type="text/javascript" th:src="@{/static/layui/layui.js}"></script>
 <script type="text/javascript" th:src="@{/static/admin/js/account/list.js}"></script>
+
+<script>
+
+</script>
 </html>

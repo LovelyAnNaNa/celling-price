@@ -2,8 +2,6 @@ package com.whtt.cellingprice.controller;
 
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.github.pagehelper.PageHelper;
 import com.whtt.cellingprice.common.CommonResult;
 import com.whtt.cellingprice.common.PageData;
 import com.whtt.cellingprice.entity.pojo.SysCustomer;
@@ -13,12 +11,9 @@ import com.whtt.cellingprice.service.SysRechargeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -66,6 +61,13 @@ public class SysRechargeController {
         }
 
         return CommonResult.failed("积分更改失败,请稍后重试");
+    }
+
+    @ResponseBody
+    @PostMapping(value = "/del")
+    public Object del(@RequestParam @NotNull(message = "充值记录id不能为空!") Integer rechargeId){
+         rechargeService.removeById(rechargeId);
+        return CommonResult.success();
     }
 
     @GetMapping

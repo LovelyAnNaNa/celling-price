@@ -96,7 +96,11 @@ public class SysCustomerController {
     @ResponseBody
     @PostMapping(value = "/saveAdd")
     public Object saveAdd(@RequestBody SysCustomer newCustomer){
-
+        //根据用户账号获取数据库中的
+        SysCustomer dbCustomer = customerService.getByCustomernumber(newCustomer.getCustomerNumber());
+        if(dbCustomer != null){
+            return CommonResult.failed("数据库已有该账号,请重新输入!");
+        }
         boolean save = customerService.save(newCustomer);
         if(save){
             return CommonResult.success("保存用户失败,请稍后重试!");
