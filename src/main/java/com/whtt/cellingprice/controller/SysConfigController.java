@@ -7,10 +7,8 @@ import com.whtt.cellingprice.service.SysConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -37,7 +35,7 @@ public class SysConfigController {
     }
 
     @GetMapping
-    public Object integral() {
+    public Object list() {
         List<SysConfig> configList = configService.list();
         ModelAndView mav = new ModelAndView();
         mav.setViewName("config/list");
