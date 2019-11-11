@@ -1,16 +1,17 @@
 package com.whtt.cellingprice.controller;
 
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.whtt.cellingprice.common.CommonResult;
-import com.whtt.cellingprice.entity.pojo.SysUser;
 import com.whtt.cellingprice.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotBlank;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
  * <p>
@@ -27,11 +28,11 @@ public class SysUserController {
     private SysUserService sysUserService;
     @ResponseBody
     @RequestMapping(value = "/login")
-    public  Object login(@RequestParam(value = "username",required = false) String username,@RequestParam(value = "password",required = false) String password){
-        System.out.println(username);
+    public  Object login(@RequestParam(value = "username",required = false)@SessionAttribute(value = "username",required = false)String username, @RequestParam(value = "password",required = false) String password, HttpSession session ) throws IOException {
         if (sysUserService.selectLogin(username,password).isEmpty()){
                 return CommonResult.failed("用户名或密码输入有误");
         }else {
+            session.setAttribute("username","username");
             return CommonResult.success("登录成功");
         }
     }
@@ -49,7 +50,6 @@ public class SysUserController {
     public String index() {
             return "/index";
     }
-
     @GetMapping(value = "/login")
     public String login(){
         return "/login";
@@ -57,6 +57,11 @@ public class SysUserController {
     @GetMapping(value = "/forgetPassword")
     public String forgetPassword(){
         return "/forget-password";
+    }
+    @GetMapping(value = "/list")
+    public String userManager(){
+        return "UserManager" +
+                "/list";
     }
 }
 
