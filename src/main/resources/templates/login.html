@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 		<title>登陆页面</title>
-		<link rel="stylesheet" href="/static/layui/css/layui.css" media="all" />
-		<link rel="stylesheet" href="/static/css/login.css" media="all"/>
+		<link rel="stylesheet" th:href="@{/static/layui/css/layui.css}" media="all" />
+		<link rel="stylesheet"  th:href="@{/static/css/login.css}" media="all"/>
 	</head>
 	<body class="body">
 		<!-- LoginForm -->
@@ -20,20 +20,20 @@
 				<input type="password" placeholder="请输入密码" required  lay-verify="required|pass" name="password"class="input_login" id="pwd">
 					<button class="input_login" lay-submit="submit" lay-filter="demo1" id="enterSubmit">立即登录</button>
 				<hr style="width: 85%" />
-				<p style="width: 85%"><a href="#" name class="fl" style="margin-left: 75px;">没有账号？立即注册</a><a href="/sysUser/forgetPassword" class="fr" style="margin-left: 110px;">忘记密码？</a></p>
+				<p style="width: 85%"><a href="#" name class="fl" style="margin-left: 75px;">没有账号？立即注册</a><a th:href="@{/sysUser/forgetPassword}" class="fr" style="margin-left: 110px;">忘记密码？</a></p>
 				</form>
 			</div>
 		</div>
 		<!-- Jquery Js -->
-		<script type="text/javascript" src="/static/js/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" th:src="@{/static/js/jquery-3.4.1.min.js}"></script>
 		<!-- Layui Js -->
-		<script type="text/javascript" src="/static/layui/layui.js"></script>
+		<script type="text/javascript" th:src="@{/static/layui/layui.js}"></script>
 		<!-- Jqarticle Js -->
-		<script type="text/javascript" src="/static/assembly/jqarticle/jparticle.min.js"></script>
+		<script type="text/javascript" th:src="@{/static/assembly/jqarticle/jparticle.min.js}"></script>
 		<!-- ZylVerificationCode Js-->
-		<script type="text/javascript" src="/static/js/assembly/zylVerificationCode/zylVerificationCode.js"></script>
+		<script type="text/javascript" th:src="@{/static/js/assembly/zylVerificationCode/zylVerificationCode.js}"></script>
 		<!--	登录页面显示效果	-->	`
-		<script type="text/javascript" src="/static/assembly/zylVerificationCode/login.js"></script>
+		<script type="text/javascript" th:src="@{/static/assembly/zylVerificationCode/login.js}"></script>
 
 	</body>
 </html>
