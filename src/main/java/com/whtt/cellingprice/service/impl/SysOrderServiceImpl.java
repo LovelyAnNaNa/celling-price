@@ -36,8 +36,14 @@ public class SysOrderServiceImpl extends ServiceImpl<SysOrderMapper, SysOrder> i
     private SysCustomerService customerService;
 
     @Override
+    public int getSumDeductintegral(Integer status, String date) {
+        return orderMapper.getSumDeductintegral(status,date);
+    }
+
+    @Override
     public int getOrderCount(Integer status, String date) {
         QueryWrapper<SysOrder> orderQueryWrapper = new QueryWrapper<>();
+
         if (status != null) {
             orderQueryWrapper.eq("status",status);
         }

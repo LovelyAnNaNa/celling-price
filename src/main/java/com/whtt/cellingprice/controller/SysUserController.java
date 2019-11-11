@@ -4,6 +4,7 @@ package com.whtt.cellingprice.controller;
 import cn.hutool.core.date.DateUtil;
 import com.whtt.cellingprice.common.CommonResult;
 import com.whtt.cellingprice.service.SysOrderService;
+import com.whtt.cellingprice.service.SysRechargeService;
 import com.whtt.cellingprice.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,8 @@ public class SysUserController {
     private SysUserService sysUserService;
     @Autowired
     private SysOrderService orderService;
+    @Autowired
+    private SysRechargeService rechargeService;
 
     @GetMapping(value = "/logout")
     public String logout(HttpSession session) {
@@ -75,18 +78,38 @@ public class SysUserController {
     public ModelAndView home(){
         ModelAndView mav = new ModelAndView();
         mav.setViewName("home");
-        //获取订单总交易数量和今日交易数量
+        String today = DateUtil.today();
+        //获取订单总交易总量
         int totalOrderCount = orderService.getOrderCount(null, null);
-        int todayOrderCount = orderService.getOrderCount(null, DateUtil.today());
         //获取顶价成功订单和用户违约订单数量
         int successOrderCount = orderService.getOrderCount(1, null);
         int violateOrderCount = orderService.getOrderCount(2, null);
+        //获取积分交易总额
+        int totalDeductIntegral = orderService.getSumDeductintegral(null, null);
+        //获取用户充值的总积分
+        int totalSumIntegral = rechargeService.getSumIntegral(null, null);
+
+        //获取今日订单交易总量
+        int todayOrderCount = orderService.getOrderCount(null, today);
+        //获取今日顶价成功和用户违约订单数量
+        int todaySuccessOrderCount = orderService.getOrderCount(1, today);
+        int todayViolateOrderCount = orderService.getOrderCount(2,today);
+        //获取今日订单的交易总额
+        int todayDeductIntegral = orderService.getSumDeductintegral(null,today);
+        //获取用户今日充值的总积分
+        int todaySumIntegral = rechargeService.getSumIntegral(null, today);
 
 
         mav.addObject("totalOrderCount",totalOrderCount);
-        mav.addObject("todayOrderCount",todayOrderCount);
         mav.addObject("successOrderCount",successOrderCount);
         mav.addObject("violateOrderCount",violateOrderCount);
+        mav.addObject("totalDeductIntegral",totalDeductIntegral);
+        mav.addObject("totalSumIntegral",totalSumIntegral);
+        mav.addObject("todayOrderCount",todayOrderCount);
+        mav.addObject("todaySuccessOrderCount",todaySuccessOrderCount);
+        mav.addObject("todayViolateOrderCount",todayViolateOrderCount);
+        mav.addObject("todayDeductIntegral",todayDeductIntegral);
+        mav.addObject("todaySumIntegral",todaySumIntegral);
         return mav;
     }
 
