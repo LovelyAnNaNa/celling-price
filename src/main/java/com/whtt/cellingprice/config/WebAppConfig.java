@@ -13,7 +13,7 @@ public class WebAppConfig extends WebMvcConfigurationSupport {
     private InterceptorConfig interceptorConfig;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        System.out.println("大哥好");
+
         //注册自定义拦截器，添加拦截路径和排除拦截路径
         registry.addInterceptor(interceptorConfig).addPathPatterns("/api/**").excludePathPatterns("/sysUser/login","/sysUser/forgetPassword");
     }
