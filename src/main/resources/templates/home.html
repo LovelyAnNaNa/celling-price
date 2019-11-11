@@ -1,11 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>首页数据展示</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" th:href="@{/static/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_tnyc012u2rlwstt9.css" media="all"/>
+    <style>
+        .layui-form-label {
+            width: 30%;
+        }
+
+        .layui-input {
+            width: 60%;
+        }
+        tr{
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-<h1>home</h1>
+
+<fieldset class="layui-elem-field">
+    <legend>交易信息</legend>
+    <table class="layui-table" lay-size="lg">
+        <colgroup>
+            <col width="150">
+            <col width="200">
+        </colgroup>
+        <tbody>
+        <tr>
+            <td>今日交易订单总数:</td>
+            <td th:text="${todayOrderCount}  + 条"></td>
+        </tr>
+        <tr>
+            <td>今日交易订单总数</td>
+            <td th:text="${totalOrderCount}  + 条"></td>
+        </tr>
+        <tr>
+            <td>顶价成功订单数量:</td>
+            <td th:text="${successOrderCount}  + 条"></td>
+        </tr>
+        <tr>
+            <td>今日交易订单总数</td>
+            <td th:text="${violateOrderCount} + 条 "></td>
+        </tr>
+        </tbody>
+    </table>
+</fieldset>
 
 </body>
+<script type="text/javascript" th:src="@{/static/layui/layui.js}"></script>
 </html>

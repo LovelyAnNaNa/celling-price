@@ -16,8 +16,6 @@ public class InterceptorConfig implements HandlerInterceptor {
     private static final Logger log = LoggerFactory.getLogger(InterceptorConfig.class);
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse response, Object o) throws Exception {
-        System.out.println("进入");
-        log.info("---------------------开始进入请求地址拦截----------------------------");
         HttpSession session = httpServletRequest.getSession();
         if(!StringUtils.isEmpty((String) session.getAttribute("username"))){
             return true;
@@ -28,12 +26,10 @@ public class InterceptorConfig implements HandlerInterceptor {
     }
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
-        log.info("---------------------开始进入请求地址拦截----------------------------");
     }
 
     @Override
     public void afterCompletion(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
-        log.info("---------------------开始进入请求地址拦截----------------------------");
     }
 
 }

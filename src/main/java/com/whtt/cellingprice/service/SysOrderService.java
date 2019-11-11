@@ -15,6 +15,9 @@ import java.util.List;
  */
 public interface SysOrderService extends IService<SysOrder> {
 
+    //获取订单总数
+    int getOrderCount(Integer status, String date);
+
     //根据用户账号和日期获取用户的顶价订单
     List<SysOrder> getCustomerOrder(String customerNumber,String date);
 
