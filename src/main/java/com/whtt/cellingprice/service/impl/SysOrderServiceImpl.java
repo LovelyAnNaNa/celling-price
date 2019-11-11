@@ -36,6 +36,21 @@ public class SysOrderServiceImpl extends ServiceImpl<SysOrderMapper, SysOrder> i
     private SysCustomerService customerService;
 
     @Override
+    public List<SysOrder> getCustomerOrder(String customerNumber, String date) {
+        QueryWrapper<SysOrder> orderQueryWrapper = new QueryWrapper<>();
+        //判断是否根据用户账号查询
+        if(StringUtils.isNotBlank(customerNumber)){
+            SysCustomer customerInfo = customerService.getByCustomernumber(customerNumber);
+            orderQueryWrapper.eq("customer_id",customerInfo.getId());
+        }
+        //判断是否根据日期查询
+        if(StringUtils.isNotBlank(date)){
+            orderQueryWrapper.like("create_time",date);
+        }
+        return orderMapper.selectList(orderQueryWrapper);
+    }
+
+    @Override
     public List<SysOrder> getOrderList(Integer page, Integer limit, String customerName, String rangeIntegral,Integer status,
                                        String startTime,String endTime) {
         QueryWrapper<SysOrder> orderQueryWrapper = new QueryWrapper<>();
