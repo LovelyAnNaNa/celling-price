@@ -17,5 +17,5 @@ public interface SysUserService extends IService<SysUser> {
 
     List selectLogin(String username, String password);
 
-    int changePassword(String username,String password);
+    int changePassword(String pass,String word);
 }

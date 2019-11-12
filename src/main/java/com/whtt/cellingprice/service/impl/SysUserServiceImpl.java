@@ -34,13 +34,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public int changePassword(String username, String password) {
+    public int changePassword(String pass ,String word) {
         SysUser sysUser = new SysUser();
-        sysUser.setUsername(username);
-        sysUser.setPassword(password);
-        LambdaQueryWrapper<SysUser> queryWrapper = Wrappers.<SysUser>lambdaQuery();
-        queryWrapper.eq(SysUser::getUsername, username);
+        sysUser.setPassword(word);
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>();
+        queryWrapper.eq("password", pass);
         return sysUserMapper.update(sysUser, queryWrapper);
+
     }
 
 }
