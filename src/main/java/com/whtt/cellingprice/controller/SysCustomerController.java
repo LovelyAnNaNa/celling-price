@@ -130,6 +130,22 @@ public class SysCustomerController {
         return pageData;
     }
 
+    /**
+     * 新增账号或增加积分
+     * @param customerName
+     * @param customerNumber
+     * @param integral
+     * @param desc
+     * @return
+     */
+    @PostMapping("/insertCustomerOrAddIntegral")
+    public CommonResult insertCustomerOrAddIntegral(@NotBlank(message = "用户名不能为空") String customerName,
+                                                    @NotBlank(message = "微信标示不能为空") String customerNumber,
+                                                    @NotNull(message = "积分不能为空") Integer integral,
+                                                    @NotBlank(message = "描述不能为空") String desc) {
+        return customerService.insertCustomerOrAddIntegral(customerName, customerNumber, integral, desc);
+    }
+
     @GetMapping(value = "/add")
     public String add(){
         return "customer/add";
