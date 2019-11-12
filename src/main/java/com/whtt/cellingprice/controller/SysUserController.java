@@ -41,26 +41,21 @@ public class SysUserController {
 
     @ResponseBody
     @RequestMapping(value = "/login")
-    public Object login(@RequestParam(value = "username", required = false) @SessionAttribute(value = "username", required = false) String username, @RequestParam(value = "password", required = false) String password, HttpSession session) throws IOException {
-        if (sysUserService.selectLogin(username, password).isEmpty()) {
-            return CommonResult.failed("用户名或密码输入有误");
-        } else {
-            for (int i = 0; i < sysUserService.selectLogin(username, password).size(); i++) {
-                SysUser sysUser= (SysUser) sysUserService.selectLogin(username, password).get(i);
-                session.setAttribute("id",sysUser.getId());
-                break;
-            }
-            session.setAttribute("username", "username");
-            return CommonResult.success("登录成功");
+    public Object login(@RequestParam(value = "username", required = false) String username, @RequestParam(value = "password", required = false) String password, HttpSession session) throws IOException {
+        SysUser userInfo = sysUserService.getByUsernameAndPassword(username, password);
+        if(userInfo == null){
+            return CommonResult.failed("用户名或密码不正确!");
         }
+        session.setAttribute("user_id", userInfo.getId());
+        return CommonResult.success();
     }
 
     @ResponseBody
     @RequestMapping(value = "/changePassword")
-    public Object changePassword(@RequestParam(value = "username", required = false) @SessionAttribute(value = "username", required = false) String username,@RequestParam(value = "pass", required = false) String pass,HttpSession session) {
-        Integer userId = (Integer)session.getAttribute("id");
-        if (sysUserService.changePassword(pass,userId) >=0) {
-            return CommonResult.success("更改密码成功");
+    public Object changePassword(@RequestParam(value = "pass", required = true) String pass, HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("user_id");
+        if (sysUserService.changePassword(pass, userId) >= 0) {
+            return CommonResult.success();
         } else {
             return CommonResult.failed("更改密码失败");
         }
@@ -82,7 +77,7 @@ public class SysUserController {
     }
 
     @GetMapping(value = "/home")
-    public ModelAndView home(){
+    public ModelAndView home() {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("home");
         String today = DateUtil.today();
@@ -100,23 +95,23 @@ public class SysUserController {
         int todayOrderCount = orderService.getOrderCount(null, today);
         //获取今日顶价成功和用户违约订单数量
         int todaySuccessOrderCount = orderService.getOrderCount(1, today);
-        int todayViolateOrderCount = orderService.getOrderCount(2,today);
+        int todayViolateOrderCount = orderService.getOrderCount(2, today);
         //获取今日订单的交易总额
-        int todayDeductIntegral = orderService.getSumDeductintegral(null,today);
+        int todayDeductIntegral = orderService.getSumDeductintegral(null, today);
         //获取用户今日充值的总积分
         int todaySumIntegral = rechargeService.getSumIntegral(null, today);
 
 
-        mav.addObject("totalOrderCount",totalOrderCount);
-        mav.addObject("successOrderCount",successOrderCount);
-        mav.addObject("violateOrderCount",violateOrderCount);
-        mav.addObject("totalDeductIntegral",totalDeductIntegral);
-        mav.addObject("totalSumIntegral",totalSumIntegral);
-        mav.addObject("todayOrderCount",todayOrderCount);
-        mav.addObject("todaySuccessOrderCount",todaySuccessOrderCount);
-        mav.addObject("todayViolateOrderCount",todayViolateOrderCount);
-        mav.addObject("todayDeductIntegral",todayDeductIntegral);
-        mav.addObject("todaySumIntegral",todaySumIntegral);
+        mav.addObject("totalOrderCount", totalOrderCount);
+        mav.addObject("successOrderCount", successOrderCount);
+        mav.addObject("violateOrderCount", violateOrderCount);
+        mav.addObject("totalDeductIntegral", totalDeductIntegral);
+        mav.addObject("totalSumIntegral", totalSumIntegral);
+        mav.addObject("todayOrderCount", todayOrderCount);
+        mav.addObject("todaySuccessOrderCount", todaySuccessOrderCount);
+        mav.addObject("todayViolateOrderCount", todayViolateOrderCount);
+        mav.addObject("todayDeductIntegral", todayDeductIntegral);
+        mav.addObject("todaySumIntegral", todaySumIntegral);
         return mav;
     }
 

@@ -1,19 +1,13 @@
 package com.whtt.cellingprice.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.whtt.cellingprice.entity.pojo.SysUser;
 import com.whtt.cellingprice.mapper.SysUserMapper;
 import com.whtt.cellingprice.service.SysUserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
-import java.awt.*;
-import java.util.List;
 
 /**
  * <p>
@@ -28,10 +22,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Resource
     private SysUserMapper sysUserMapper;
     @Override
-    public List selectLogin(String username, String password) {
-        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>();
-        queryWrapper.eq("username", username).eq("password", password);
-        return sysUserMapper.selectList(queryWrapper);
+    public SysUser getByUsernameAndPassword(String username, String password) {
+        QueryWrapper<SysUser> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("username",username);
+        userQueryWrapper.eq("password",password);
+        return sysUserMapper.selectOne(userQueryWrapper);
     }
 
     @Override
