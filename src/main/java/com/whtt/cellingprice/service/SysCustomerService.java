@@ -1,5 +1,6 @@
 package com.whtt.cellingprice.service;
 
+import com.whtt.cellingprice.common.CommonResult;
 import com.whtt.cellingprice.entity.pojo.SysCustomer;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -27,4 +28,14 @@ public interface SysCustomerService extends IService<SysCustomer> {
 
     //根据用户名模糊查询
     List<SysCustomer> getByFuzzyCustomername(String customerName);
+
+    /**
+     * 新增账号或增加积分
+     * @param customerName
+     * @param customerNumber
+     * @param integral
+     * @param desc
+     * @return
+     */
+    CommonResult insertCustomerOrAddIntegral(String customerName, String customerNumber, Integer integral, String desc);
 }

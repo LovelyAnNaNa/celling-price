@@ -3,6 +3,7 @@ package com.whtt.cellingprice.service.impl;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
+import com.whtt.cellingprice.common.CommonResult;
 import com.whtt.cellingprice.common.Constant;
 import com.whtt.cellingprice.config.DataConfig;
 import com.whtt.cellingprice.entity.pojo.SysCustomer;
@@ -107,5 +108,19 @@ public class SysCustomerServiceImpl extends ServiceImpl<SysCustomerMapper, SysCu
         QueryWrapper<SysCustomer> customerQueryWrapper = new QueryWrapper<>();
         customerQueryWrapper.like("customer_name",customerName);
         return customerMapper.selectList(customerQueryWrapper);
+    }
+
+    /**
+     * 新增账号或增加积分
+     *
+     * @param customerName
+     * @param customerNumber
+     * @param integral
+     * @param desc
+     * @return
+     */
+    @Override
+    public CommonResult insertCustomerOrAddIntegral(String customerName, String customerNumber, Integer integral, String desc) {
+        return null;
     }
 }
