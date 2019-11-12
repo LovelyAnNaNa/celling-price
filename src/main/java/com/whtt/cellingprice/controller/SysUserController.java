@@ -3,6 +3,7 @@ package com.whtt.cellingprice.controller;
 
 import cn.hutool.core.date.DateUtil;
 import com.whtt.cellingprice.common.CommonResult;
+import com.whtt.cellingprice.entity.pojo.SysUser;
 import com.whtt.cellingprice.service.SysOrderService;
 import com.whtt.cellingprice.service.SysRechargeService;
 import com.whtt.cellingprice.service.SysUserService;
@@ -44,6 +45,11 @@ public class SysUserController {
         if (sysUserService.selectLogin(username, password).isEmpty()) {
             return CommonResult.failed("用户名或密码输入有误");
         } else {
+            for (int i = 0; i < sysUserService.selectLogin(username, password).size(); i++) {
+                SysUser sysUser= (SysUser) sysUserService.selectLogin(username, password).get(i);
+                session.setAttribute("id",sysUser.getId());
+                break;
+            }
             session.setAttribute("username", "username");
             return CommonResult.success("登录成功");
         }
@@ -51,9 +57,9 @@ public class SysUserController {
 
     @ResponseBody
     @RequestMapping(value = "/changePassword")
-    public Object changePassword(@RequestParam(value = "pass", required = false) String pass,HttpSession session) {
-        Integer userId = (Integer)session.getAttribute("userId");
-        if (sysUserService.changePassword(pass,userId) > 0) {
+    public Object changePassword(@RequestParam(value = "username", required = false) @SessionAttribute(value = "username", required = false) String username,@RequestParam(value = "pass", required = false) String pass,HttpSession session) {
+        Integer userId = (Integer)session.getAttribute("id");
+        if (sysUserService.changePassword(pass,userId) >=0) {
             return CommonResult.success("更改密码成功");
         } else {
             return CommonResult.failed("更改密码失败");

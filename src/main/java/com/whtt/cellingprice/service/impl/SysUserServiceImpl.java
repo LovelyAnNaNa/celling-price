@@ -38,9 +38,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public int changePassword(String word,Integer id) {
         SysUser sysUser=new SysUser();
         sysUser.setPassword(word);
-        sysUser.setId(id);
-        System.out.println(sysUser.getId());
         QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>();
+        queryWrapper.eq("id", id);
         return sysUserMapper.update(sysUser, queryWrapper);
 
     }
