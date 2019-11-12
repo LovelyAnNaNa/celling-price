@@ -36,6 +36,12 @@ public class SysRechargeServiceImpl extends ServiceImpl<SysRechargeMapper, SysRe
     private SysCustomerService customerService;
 
     @Override
+    public int getSumIntegral(Integer customerId, String date) {
+        Integer sumIntegral = rechargeMapper.getSumIntegral(customerId, date);
+        return sumIntegral == null ? 0 : sumIntegral;
+    }
+
+    @Override
     public List<SysRecharge> getRechargeList(Integer page, Integer limit, String customerName,String rangeIntegral,
                                    String startTime,String endTime) {
         QueryWrapper<SysRecharge> rechargeQueryWrapper = new QueryWrapper<>();

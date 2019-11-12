@@ -1,21 +1,21 @@
 package com.whtt.cellingprice.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
+import cn.hutool.core.date.DateUtil;
 import com.whtt.cellingprice.common.CommonResult;
 import com.whtt.cellingprice.common.PageData;
 import com.whtt.cellingprice.config.DataConfig;
 import com.whtt.cellingprice.entity.pojo.SysCustomer;
+import com.whtt.cellingprice.entity.pojo.SysOrder;
 import com.whtt.cellingprice.service.SysCustomerService;
-import org.apache.commons.lang3.StringUtils;
+import com.whtt.cellingprice.service.SysOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,6 +31,8 @@ import java.util.List;
 @RequestMapping("/admin/sysCustomer")
 public class SysCustomerController {
 
+    @Autowired
+    private SysOrderService orderService;
     @Autowired
     private SysCustomerService customerService;
 
@@ -67,6 +69,12 @@ public class SysCustomerController {
     public Object onOrder(@RequestParam(required = false) String commodity,
                         @RequestParam @NotBlank(message = "用户账号不能为空!") String customernumber,
                           @RequestParam @NotNull(message = "订单状态不能为空!")Integer status){
+        //判断用户当天下单数量是否已经到4笔
+        List<SysOrder> customerTodayOrder = orderService.getCustomerOrder(customernumber, DateUtil.formatDate(new Date()));
+        if(customerTodayOrder.size() >= 4){
+            return CommonResult.failed("当天下单数量已达最大数量!");
+        }
+
         customerService.addOrder(commodity,customernumber,status);
         return CommonResult.success();
     }

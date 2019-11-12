@@ -1,7 +1,7 @@
 package com.whtt.cellingprice.service;
 
-import com.whtt.cellingprice.entity.pojo.SysRecharge;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.whtt.cellingprice.entity.pojo.SysRecharge;
 
 import java.util.List;
 
@@ -14,6 +14,8 @@ import java.util.List;
  * @since 2019-11-07
  */
 public interface SysRechargeService extends IService<SysRecharge> {
+
+    int getSumIntegral(Integer customerId,String date);
 
     List<SysRecharge> getRechargeList(Integer page,Integer limit,String customerName,String rangeIntegral,
                                       String startTime,String endTime);
