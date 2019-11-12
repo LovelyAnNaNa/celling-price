@@ -51,8 +51,8 @@ public class SysUserController {
 
     @ResponseBody
     @RequestMapping(value = "/changePassword")
-    public Object changePassword(@RequestParam(value = "username", required = false) String username, @RequestParam(value = "password", required = false) String password) {
-        if (sysUserService.changePassword(username, password) != 0) {
+    public Object changePassword(@RequestParam(value = "pass", required = false) String pass, @RequestParam(value = "word", required = false) String word) {
+        if (sysUserService.changePassword(pass,word) > 0) {
             return CommonResult.success("更改密码成功");
         } else {
             return CommonResult.failed("更改密码失败");

@@ -18,7 +18,6 @@ public class WebAppConfig implements WebMvcConfigurer {
         registry.addInterceptor(interceptorConfig).
                 addPathPatterns("/**").
                 excludePathPatterns("/sysUser/login",
-                        "/sysUser/forgetPassword",
                         "/static/**",
                         "/admin/sysCustomer/insertCustomerOrAddIntegral",
                         "/admin/sysCustomer/customerInfo",
