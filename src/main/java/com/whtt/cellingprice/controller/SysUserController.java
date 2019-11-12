@@ -32,6 +32,7 @@ public class SysUserController {
     @Autowired
     private SysRechargeService rechargeService;
 
+    private  Integer userId;
     @GetMapping(value = "/logout")
     public String logout(HttpSession session) {
         session.removeAttribute("username");
@@ -41,9 +42,11 @@ public class SysUserController {
     @ResponseBody
     @RequestMapping(value = "/login")
     public Object login(@RequestParam(value = "username", required = false) @SessionAttribute(value = "username", required = false) String username, @RequestParam(value = "password", required = false) String password, HttpSession session) throws IOException {
+
         if (sysUserService.selectLogin(username, password).isEmpty()) {
             return CommonResult.failed("用户名或密码输入有误");
         } else {
+            userId = (Integer)session.getAttribute("userId");
             session.setAttribute("username", "username");
             return CommonResult.success("登录成功");
         }
@@ -51,8 +54,8 @@ public class SysUserController {
 
     @ResponseBody
     @RequestMapping(value = "/changePassword")
-    public Object changePassword(@RequestParam(value = "pass", required = false) String pass, @RequestParam(value = "word", required = false) String word) {
-        if (sysUserService.changePassword(pass,word) > 0) {
+    public Object changePassword(@RequestParam(value = "pass", required = false) String pass) {
+        if (sysUserService.changePassword(pass,userId) > 0) {
             return CommonResult.success("更改密码成功");
         } else {
             return CommonResult.failed("更改密码失败");

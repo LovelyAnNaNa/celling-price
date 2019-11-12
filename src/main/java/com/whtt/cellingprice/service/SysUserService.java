@@ -3,6 +3,7 @@ package com.whtt.cellingprice.service;
 import com.whtt.cellingprice.entity.pojo.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -17,5 +18,5 @@ public interface SysUserService extends IService<SysUser> {
 
     List selectLogin(String username, String password);
 
-    int changePassword(String pass,String word);
+    int changePassword(String word,Integer id);
 }

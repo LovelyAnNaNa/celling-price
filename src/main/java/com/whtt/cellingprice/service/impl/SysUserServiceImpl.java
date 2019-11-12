@@ -7,9 +7,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.whtt.cellingprice.entity.pojo.SysUser;
 import com.whtt.cellingprice.mapper.SysUserMapper;
 import com.whtt.cellingprice.service.SysUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -24,21 +27,20 @@ import java.util.List;
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
     @Resource
     private SysUserMapper sysUserMapper;
-
     @Override
     public List selectLogin(String username, String password) {
         QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>();
         queryWrapper.eq("username", username).eq("password", password);
-
         return sysUserMapper.selectList(queryWrapper);
     }
 
     @Override
-    public int changePassword(String pass ,String word) {
-        SysUser sysUser = new SysUser();
+    public int changePassword(String word,Integer id) {
+        SysUser sysUser=new SysUser();
         sysUser.setPassword(word);
+        sysUser.setId(id);
+        System.out.println(sysUser.getId());
         QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>();
-        queryWrapper.eq("password", pass);
         return sysUserMapper.update(sysUser, queryWrapper);
 
     }
