@@ -34,8 +34,7 @@ public interface SysCustomerService extends IService<SysCustomer> {
      * @param customerName
      * @param customerNumber
      * @param integral
-     * @param desc
      * @return
      */
-    CommonResult insertCustomerOrAddIntegral(String customerName, String customerNumber, Integer integral, String desc);
+    CommonResult insertCustomerOrAddIntegral(String customerName, String customerNumber, Integer integral);
 }

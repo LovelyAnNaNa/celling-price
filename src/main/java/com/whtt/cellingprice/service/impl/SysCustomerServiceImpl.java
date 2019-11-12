@@ -116,11 +116,35 @@ public class SysCustomerServiceImpl extends ServiceImpl<SysCustomerMapper, SysCu
      * @param customerName
      * @param customerNumber
      * @param integral
-     * @param desc
      * @return
      */
     @Override
-    public CommonResult insertCustomerOrAddIntegral(String customerName, String customerNumber, Integer integral, String desc) {
-        return null;
+    public CommonResult insertCustomerOrAddIntegral(String customerName, String customerNumber, Integer integral) {
+        SysCustomer customer = getByCustomernumber(customerNumber);
+        boolean flag;
+        int type;
+        if (null != customer) {
+            //存在账号新增积分
+            customer.setIntegral(customer.getIntegral() + integral);
+            flag = customer.updateById();
+            type = 0;
+        } else {
+            customer = new SysCustomer();
+            customer.setCustomerName(customerName);
+            customer.setCustomerNumber(customerNumber);
+            customer.setIntegral(integral);
+            flag = customer.insert();
+            type = 1;
+        }
+
+        if (flag) {
+            if (type == 1) {
+                return CommonResult.success(customerName + "（" + customerNumber + "），你好" + "开通账号成功，积分余额为：" + customer.getIntegral());
+            } else {
+                return CommonResult.success(customerName + "（" + customerNumber + "），你好" + "充值积分，积分余额为：" + customer.getIntegral());
+            }
+        }
+
+        return CommonResult.failed();
     }
 }
