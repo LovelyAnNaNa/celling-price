@@ -275,7 +275,11 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
 
         flag = false;
         //查询可用账号
-        List<SysAccount> accountList = baseMapper.selectList(new QueryWrapper<SysAccount>().eq("status", Constant.ACCOUNT_STATUS_LOGIN));
+        QueryWrapper<SysAccount> query = new QueryWrapper<>();
+        query.eq("status", Constant.ACCOUNT_STATUS_LOGIN);
+        query.gt("count", 0);
+
+        List<SysAccount> accountList = baseMapper.selectList(query);
         for (SysAccount account : accountList) {
             String loginInfo = account.getLoginInfo();
             JSONObject jsonObject = JSONObject.parseObject(loginInfo);
@@ -292,6 +296,13 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
                 account.updateById();
                 continue;
             }
+
+            Integer count = account.getCount() - 1;
+            if (0 >= count) {
+                account.setStatus(Constant.ACCOUNT_STATUS_COUNT);
+            }
+            account.setCount(count);
+            account.updateById();
 
             flag = true;
             break;

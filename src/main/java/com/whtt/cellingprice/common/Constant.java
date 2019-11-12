@@ -25,6 +25,12 @@ public class Constant {
      */
     public final static Integer ACCOUNT_STATUS_FAILURE = 2;
 
+    /**
+     * 次数使用完
+     */
+    public final static Integer ACCOUNT_STATUS_COUNT = 3;
+
+
     public final static String FORMAT_DATE_TIME = "yyyy-MM-dd HH:mm:ss";
 
     /**

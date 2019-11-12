@@ -49,8 +49,10 @@
     <span class="layui-badge layui-bg-gray" >未登录</span>
     {{# }else if(d.status == 1){ }}
     <span class="layui-badge layui-bg-green" >已登录</span>
-    {{# }else{ }}
+    {{# }else if(d.status == 2){ }}
     <span class="layui-badge layui-bg-red" >失效</span>
+    {{# }else{ }}
+    <span class="layui-badge layui-bg-red" >次数限制</span>
     {{# }  }}
 </script>
 

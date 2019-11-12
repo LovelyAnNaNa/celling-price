@@ -38,7 +38,7 @@ public class SysAccount extends Model<SysAccount> {
     private String phone;
 
     /**
-     * 账号状态,0未登录,1已登录,3失效
+     * 账号状态,0未登录,1已登录,3失效,4次数使用完
      */
     private Integer status;
 
@@ -51,6 +51,11 @@ public class SysAccount extends Model<SysAccount> {
      * 账号消息
      */
     private String msg;
+
+    /**
+     * 使用次数
+     */
+    private Integer count;
 
     /**
      * 创建账号的用户id

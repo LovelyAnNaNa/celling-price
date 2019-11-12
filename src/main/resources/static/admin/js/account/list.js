@@ -23,6 +23,7 @@ layui.use(['layer', 'form', 'table'], function(){
             {field: 'phone', title: '手机号',align:'center'},
             {field: 'msg', title: '账户信息',align:'center'},
             {field: 'status', title: '账户状态',align:'center',templet:"#status"},
+            {field: 'count', title: '剩余次数',align:'center',templet:"#count"},
             {fixed: 'right', align: 'center', toolbar: '#accountBar'}
         ]]
     };
