@@ -64,7 +64,7 @@ layui.use(['layer', 'form', 'table'], function(){
                 if (res.code == 200) {
                     layer.msg("账户添加成功", {time: 1000}, function () {
                         //刷新父页面
-                        parent.location.reload();
+                        location.reload();
                     });
                 } else {
                     layer.msg(res.msg);

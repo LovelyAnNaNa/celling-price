@@ -72,7 +72,7 @@ layui.use(['layer', 'form', 'table','laydate'], function () {
     table.on('tool(customerList)', function (obj) {
       var data = obj.data;
       if(obj.event == 'del'){
-          layer.confirm("您确定要删除该用户吗?", {title:'删除用户',btn: ['是的,我确定', '不,我在想想']},
+          layer.confirm("您确定要删除该用户吗?(该用户对应的充值记录也会删除)", {title:'删除用户',btn: ['是的,我确定', '不,我在想想']},
               function () {
                   $.post("/admin/sysCustomer/del", {"customerId": data.id}, function (res) {
                       var code = res.code;

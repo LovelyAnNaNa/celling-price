@@ -94,11 +94,8 @@ public class SysCustomerController {
     @ResponseBody
     @PostMapping(value = "/del")
     public Object del(@RequestParam @NotNull(message = "用户id不能为空!") Integer customerId){
-        boolean result = customerService.removeById(customerId);
-        if(result){
-            return CommonResult.success();
-        }
-        return CommonResult.failed("删除失败,请稍后重试!");
+       customerService.delCustomerInfo(customerId);
+        return CommonResult.success();
     }
 
     @ResponseBody

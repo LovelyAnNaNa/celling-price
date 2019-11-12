@@ -3,8 +3,8 @@ package com.whtt.cellingprice.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
 import com.whtt.cellingprice.common.CommonResult;
 import com.whtt.cellingprice.common.Constant;
 import com.whtt.cellingprice.common.PageData;
@@ -12,13 +12,13 @@ import com.whtt.cellingprice.entity.pojo.SysAccount;
 import com.whtt.cellingprice.entity.pojo.SysCustomer;
 import com.whtt.cellingprice.mapper.SysAccountMapper;
 import com.whtt.cellingprice.service.SysAccountService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.whtt.cellingprice.service.SysCustomerService;
 import com.whtt.cellingprice.util.RequestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,6 +33,9 @@ import java.util.List;
 @Service
 public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAccount> implements SysAccountService {
 
+
+    @Resource
+    private SysAccountMapper accountMapper;
     @Autowired
     private SysCustomerService sysCustomerService;
 
@@ -141,10 +144,10 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             queryWrapper.like("phone", keyword).or().like("msg", keyword);
         }
 
-        IPage<SysAccount> iPage = page(new Page<>(page, size), queryWrapper);
-        PageData<SysAccount> pageData = new PageData<>(iPage.getRecords());
-        pageData.setCount(iPage.getTotal());
+        PageHelper.startPage(page,size);
 
+        List<SysAccount> accountList = accountMapper.selectList(queryWrapper);
+        PageData<SysAccount> pageData = new PageData<>(accountList);
         return pageData;
     }
 
