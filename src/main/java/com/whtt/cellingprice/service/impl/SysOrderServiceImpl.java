@@ -37,7 +37,8 @@ public class SysOrderServiceImpl extends ServiceImpl<SysOrderMapper, SysOrder> i
 
     @Override
     public int getSumDeductintegral(Integer status, String date) {
-        return orderMapper.getSumDeductintegral(status,date);
+        Integer sumDeductIntegral = orderMapper.getSumDeductintegral(status, date);
+        return sumDeductIntegral == null ? 0 : sumDeductIntegral;
     }
 
     @Override

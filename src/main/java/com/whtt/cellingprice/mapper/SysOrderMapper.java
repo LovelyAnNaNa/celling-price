@@ -14,5 +14,5 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface SysOrderMapper extends BaseMapper<SysOrder> {
 
-    int getSumDeductintegral(@Param("status") Integer status, @Param("date") String date);
+    Integer getSumDeductintegral(@Param("status") Integer status, @Param("date") String date);
 }

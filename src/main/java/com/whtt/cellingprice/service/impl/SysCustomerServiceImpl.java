@@ -2,16 +2,19 @@ package com.whtt.cellingprice.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.github.pagehelper.PageHelper;
 import com.whtt.cellingprice.common.CommonResult;
 import com.whtt.cellingprice.common.Constant;
 import com.whtt.cellingprice.config.DataConfig;
 import com.whtt.cellingprice.entity.pojo.SysCustomer;
 import com.whtt.cellingprice.entity.pojo.SysOrder;
+import com.whtt.cellingprice.entity.pojo.SysRecharge;
 import com.whtt.cellingprice.mapper.SysCustomerMapper;
 import com.whtt.cellingprice.service.SysCustomerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.whtt.cellingprice.service.SysOrderService;
+import com.whtt.cellingprice.service.SysRechargeService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +38,18 @@ public class SysCustomerServiceImpl extends ServiceImpl<SysCustomerMapper, SysCu
     private SysOrderService orderService;
     @Resource
     private SysCustomerMapper customerMapper;
+    @Autowired
+    private SysRechargeService rechargeService;
+
+    @Override
+    public void delCustomerInfo(Integer id) {
+        //删除用户信息
+        customerMapper.deleteById(id);
+        //删除用户的积分充值记录
+        UpdateWrapper<SysRecharge> rechargeUpdateWrapper = new UpdateWrapper<>();
+        rechargeUpdateWrapper.eq("customer_id",id);
+        rechargeService.remove(rechargeUpdateWrapper);
+    }
 
     @Override
     public List<SysCustomer> getCustomerList(Integer page, Integer limit, String customerName, String rangeIntegral, String startTime, String endTime) {
