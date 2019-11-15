@@ -4,7 +4,7 @@ import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
-public class PageData<T>  extends PageInfo {
+public class PageData<T> {
 
     private Integer code = 0;
     private Long count;
