@@ -1,8 +1,5 @@
 package com.whtt.cellingprice.util;
 
-import com.alibaba.fastjson.JSONObject;
-import com.whtt.cellingprice.common.Constant;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 请求工具栏
+ * 请求工具类
  * @author weishilei
  * @date 2019.11.06
  */
@@ -103,7 +100,7 @@ public class RequestUtil {
     }
 
     /**
-     * 设置请求他
+     * 设置请求头
      * @param conn
      * @param header
      */

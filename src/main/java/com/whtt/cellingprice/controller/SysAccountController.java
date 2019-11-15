@@ -1,7 +1,5 @@
 package com.whtt.cellingprice.controller;
 
-
-
 import com.whtt.cellingprice.common.CommonResult;
 import com.whtt.cellingprice.common.PageData;
 import com.whtt.cellingprice.entity.pojo.SysAccount;
@@ -57,7 +55,7 @@ public class SysAccountController {
     /**
      * 分页搜索查询
      * @param page
-     * @param size
+     * @param limit
      * @param status
      * @param keyword
      * @return

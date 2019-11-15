@@ -8,6 +8,7 @@ import com.github.pagehelper.PageHelper;
 import com.whtt.cellingprice.common.CommonResult;
 import com.whtt.cellingprice.common.Constant;
 import com.whtt.cellingprice.common.PageData;
+import com.whtt.cellingprice.config.DataConfig;
 import com.whtt.cellingprice.entity.pojo.SysAccount;
 import com.whtt.cellingprice.entity.pojo.SysCustomer;
 import com.whtt.cellingprice.mapper.SysAccountMapper;
@@ -243,9 +244,11 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
      */
     @Override
     public CommonResult offer(String url, String customerNumber, Integer type) {
-        if (1 == type || 2 == type) {
+        if (1 != type && 2 != type) {
             return CommonResult.failed("请选择正确类型");
         }
+        String typeName = 1 == type ? "顶价" : "违约";
+
         QueryWrapper<SysCustomer> queryWrapper = new QueryWrapper<SysCustomer>().eq("customer_number", customerNumber);
         SysCustomer customer = sysCustomerService.getOne(queryWrapper);
         if (null == customer) {
@@ -253,7 +256,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         }
         boolean flag = sysCustomerService.checkIntegral(customerNumber, type);
         if (flag) {
-            return CommonResult.failed("当前积分为：" + customer.getIntegral() + "，请充值");
+            return CommonResult.failed(typeName + "所需积分：" + DataConfig.getDeductIntegral(type) + "。你当前积分为：" + customer.getIntegral() + "，请充值");
         }
 
         String goodsId;
@@ -268,7 +271,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             return CommonResult.failed("请选择正确拍品");
         }
         //请求参数
-        String offerParamter = getOfferParamter(url);
+        String offerParamter = getOfferParamter(goodsId);
         if (StringUtils.isBlank(offerParamter)) {
             return CommonResult.failed("请选择正确拍品");
         }
@@ -311,6 +314,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         if (flag) {
             return CommonResult.success();
         }
+
         return CommonResult.failed();
     }
 
