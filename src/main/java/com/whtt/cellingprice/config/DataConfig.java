@@ -23,6 +23,22 @@ public class DataConfig implements InitializingBean {
     //用户违约所需扣除的积分
     public static Integer violateIntegral;
 
+    /**
+     * 来信账号
+     */
+    public static String laixinUsername;
+
+    /**
+     * 来信密码
+     */
+    public static String laixinPassword;
+
+    /**
+     * 来信微拍堂项目id
+     */
+    public static String laixinId;
+
+
     public static Integer getDeductIntegral(int status){
         if(status == 1){
             return cellingIntegral;
@@ -40,5 +56,14 @@ public class DataConfig implements InitializingBean {
 
         SysConfig violateConfig = configService.getOne(new QueryWrapper<SysConfig>().eq("config_key", "violate_integral"));
         violateIntegral = Integer.valueOf(violateConfig.getConfigValue());
+
+        SysConfig usernameConfig = configService.getOne(new QueryWrapper<SysConfig>().eq("config_key", "laixin_username"));
+        laixinUsername = usernameConfig.getConfigValue();
+
+        SysConfig passwordConfig = configService.getOne(new QueryWrapper<SysConfig>().eq("config_key", "laixin_password"));
+        laixinPassword = passwordConfig.getConfigValue();
+
+        SysConfig laixinIdConfig = configService.getOne(new QueryWrapper<SysConfig>().eq("config_key", "laixin_id"));
+        laixinId = laixinIdConfig.getConfigValue();
     }
 }

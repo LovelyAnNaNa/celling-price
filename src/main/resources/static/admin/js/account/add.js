@@ -24,10 +24,7 @@ layui.use('form', function(){
             },
             success: function (res) {
                 if (res.code == 200) {
-                    parent.layer.msg("请接收验证码", {time: 1000}, function () {
-                        //刷新父页面
-                        parent.location.reload();
-                    });
+                    parent.layer.msg("请接收验证码", {time: 1000}, function () {});
                 } else {
                     layer.msg(res.msg);
                 }

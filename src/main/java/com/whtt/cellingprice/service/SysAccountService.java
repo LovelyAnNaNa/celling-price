@@ -93,4 +93,11 @@ public interface SysAccountService extends IService<SysAccount> {
      * @return
      */
     CommonResult offer(String url, String customerNumber, Integer type);
+
+    /**
+     * 批量添加
+     * @param count
+     * @return
+     */
+    CommonResult addSome(Integer count);
 }

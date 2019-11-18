@@ -1,5 +1,6 @@
 package com.whtt.cellingprice.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -20,8 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * <p>
@@ -146,7 +152,6 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         }
 
         PageHelper.startPage(page,size);
-
         List<SysAccount> accountList = accountMapper.selectList(queryWrapper);
         PageData<SysAccount> pageData = new PageData<>(accountList);
         return pageData;
@@ -186,6 +191,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         if (null == account) {
             return CommonResult.failed("账号不存在");
         }
+
         String phone = account.getPhone();
         return getCode(phone);
     }
@@ -215,25 +221,12 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             return CommonResult.failed("账号不存在");
         }
         String phone = account.getPhone();
-        String response = RequestUtil.sendGet(Constant.URL_GET_ACCOUNT_INFO, "type=2&telephone=" + phone + "&verifyCode=" + code + "&sc&wpjbPromoter", Constant.URL_SEND_CODE_HEADERS);
-
-        JSONObject jsonObject;
-        try {
-            jsonObject = JSONObject.parseObject(response);
-            if (getResponseCode(jsonObject)) {
-                return CommonResult.failed(jsonObject.getString("msg"));
-            }
-
-            JSONObject data = jsonObject.getJSONObject("data");
-            account.setLoginInfo(data.toJSONString());
-            account.setStatus(Constant.ACCOUNT_STATUS_LOGIN);
-            account.setMsg("登录成功");
-            account.updateById();
-        } catch (Exception e) {
-            return CommonResult.failed();
+        String messgae = getUserInfo(account, phone, code);
+        if ("success".equals(messgae)) {
+            return CommonResult.success();
         }
 
-        return CommonResult.success();
+        return CommonResult.failed(messgae);
     }
 
     /**
@@ -271,10 +264,12 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             return CommonResult.failed("请选择正确拍品");
         }
         //请求参数
-        String offerParamter = getOfferParamter(goodsId);
+        Map<String, String> result = getOfferParamter(goodsId);
+        String offerParamter = result.get("paramter");
         if (StringUtils.isBlank(offerParamter)) {
             return CommonResult.failed("请选择正确拍品");
         }
+        String replay = result.get("replay");
 
         flag = false;
         //查询可用账号
@@ -282,6 +277,8 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         query.eq("status", Constant.ACCOUNT_STATUS_LOGIN);
         query.gt("count", 0);
 
+        String msg = "";
+        Integer integral = customer.getIntegral();
         List<SysAccount> accountList = baseMapper.selectList(query);
         for (SysAccount account : accountList) {
             String loginInfo = account.getLoginInfo();
@@ -289,11 +286,18 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             String uri = jsonObject.getString("uri");
             offerParamter += uri;
 
-            String response = RequestUtil.sendGet(Constant.URL_OFFER, offerParamter, Constant.URL_SEND_CODE_HEADERS);
+            Map<String, String> headres = new HashMap<>();
+            headres.put("Accept", "application/json");
+            headres.put("Origin", "https://w.weipaitang.com");
+            headres.put("User-Agent", "Mozilla/5.0 (Linux; Android 9; Redmi Note 5 Build/PKQ1.180904.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/045008 Mobile Safari/537.36 NetType/NETWORK_WIFI Language/zh_CN WptMessenger/3.5.0 Channel/xiaomi wptAid/xiaomi DeviceId/861742042644141 identity/e6a0ef5131a28a25a16e556c75eb1d80 brand/xiaomi model/RedmiNote5");
+            headres.put("Cookie", "userinfo_cookie=" + jsonObject.getString("cookie"));
+
+            String response = RequestUtil.sendGet(Constant.URL_OFFER, offerParamter, headres);
             JSONObject jo = JSONObject.parseObject(response);
             Integer code = jo.getInteger("code");
-            if (0 != code) {
-                String msg = jo.getString("msg");
+            //0：成功，420：拍价已领先
+            if (0 != code && 420 != code) {
+                msg = jo.getString("msg");
                 account.setMsg(msg);
                 account.setStatus(Constant.ACCOUNT_STATUS_FAILURE);
                 account.updateById();
@@ -306,16 +310,67 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             }
             account.setCount(count);
             account.updateById();
+            replay += "拍价账号：" + account.getPhone() + "\n";
 
             flag = true;
             break;
         }
 
         if (flag) {
-            return CommonResult.success();
+            Integer deductIntegral = DataConfig.getDeductIntegral(type);
+            int newIntegral = integral - deductIntegral;
+            newIntegral = newIntegral < 0 ? 0 : newIntegral;
+            customer.setIntegral(newIntegral);
+            customer.updateById();
+            replay += "花费积分：" + deductIntegral + "\n剩余积分：" + newIntegral + "\n操作状态：成功";
+
+            return CommonResult.success(replay);
         }
 
-        return CommonResult.failed();
+        replay += "剩余积分：" + integral + "操作状态：失败\n失败信息：" + msg;
+        return CommonResult.failed(replay);
+    }
+
+    /**
+     * 批量添加
+     *
+     * @param count
+     * @return
+     */
+    @Override
+    public CommonResult addSome(Integer count) {
+        if (count <= 0 || count > 50) {
+            return CommonResult.failed("添加数量1-50之间");
+        }
+        String username = DataConfig.laixinUsername;
+        String password =DataConfig.laixinPassword;
+        if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
+            return CommonResult.failed("请在系统配置正确配置来信账号密码");
+        }
+
+        String response = RequestUtil.sendGet(Constant.LAIXIN_LOGIN_URL,
+                "action=loginIn&name=" + username + "&password=" + password, new HashMap<>());
+        if (StringUtils.isBlank(response)) {
+            return CommonResult.failed("请在系统配置正确配置来信账号密码");
+        }
+        String[] responseArray = response.split("\\|");
+        String code = responseArray[0];
+        String token = responseArray[responseArray.length - 1];
+        if (!"1".equals(code)) {
+            return CommonResult.failed(token);
+        }
+
+        response = RequestUtil.sendGet(Constant.LAIXIN_LOGIN_URL,
+                "action=getPhone&sid=" + DataConfig.laixinId + "&token=" + token + "&size=" + count, new HashMap<>());
+        responseArray = response.split("\\|");
+        code = responseArray[0];
+        String phone = responseArray[responseArray.length - 1];
+        if (!"1".equals(code)) {
+            return CommonResult.failed(phone);
+        }
+
+        String[] phoneArray = phone.split(",");
+        return phoneSomeLogin(phoneArray, token);
     }
 
     private boolean getResponseCode(JSONObject jsonObject) {
@@ -332,13 +387,24 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
      * @param goodsId
      * @return
      */
-    private String getOfferParamter(String goodsId) {
+    private Map<String, String> getOfferParamter(String goodsId) {
         String paramter = new String();
-        String response = RequestUtil.sendGet(Constant.URL_GET_GOODS_INFO, "saleUri=" + goodsId, Constant.URL_SEND_CODE_HEADERS);
+        String replay = new String();
+        Map<String, String> result = new HashMap<>();
+
+        String response = RequestUtil.sendGet(Constant.URL_GET_GOODS_INFO, "saleUri=" + goodsId, Constant.URL_OFFER_HEADERS);
         JSONObject jsonObject;
         try {
             jsonObject = JSONObject.parseObject(response);
-            JSONObject sale = jsonObject.getJSONObject("data").getJSONObject("sale");
+            JSONObject data = jsonObject.getJSONObject("data");
+            JSONObject shop = data.getJSONObject("shop");
+            //店铺名称
+            String nickname = shop.getString("nickname");
+
+            JSONObject sale = data.getJSONObject("sale");
+            //拍品名称
+            String title = sale.getString("title");
+
             JSONArray jsonArray = sale.getJSONObject("bid").getJSONArray("bidList");
             JSONObject priceJson = sale.getJSONObject("priceJson");
             int increase = priceJson.getInteger("increase");
@@ -350,9 +416,12 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             }
 
             paramter = "saleUri=" + goodsId + "&bidPrice=" + bidPrice + "&lastBid=" + lastBid + "&__uuri=";
+            replay = "店铺名称：" + nickname + "\n拍品名称：" + title + "\n拍价金额：" + bidPrice + "\n";
+            result.put("paramter", paramter);
+            result.put("replay", replay);
         } catch (Exception e) {}
 
-        return paramter;
+        return result;
     }
 
     /**
@@ -371,7 +440,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
      * @return
      */
     private CommonResult getCode(String phone) {
-        String response = RequestUtil.sendGet(Constant.URL_SEND_CODE, "type=sms&telephone=" + phone, Constant.URL_SEND_CODE_HEADERS);
+        String response = RequestUtil.sendPost(Constant.URL_SEND_CODE, "type=sms&telephone=" + phone + "&nationCode=86", Constant.URL_SEND_CODE_HEADERS);
         JSONObject jsonObject;
         try {
             jsonObject = JSONObject.parseObject(response);
@@ -384,6 +453,99 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         }
 
         return CommonResult.success();
+    }
 
+    /**
+     * 获取用户信息
+     * @param account
+     * @param phone
+     * @param code
+     * @return
+     */
+    private String getUserInfo(SysAccount account, String phone, String code) {
+        JSONObject deviceInfo = new JSONObject();
+        deviceInfo.put("channel", "oppo");
+        deviceInfo.put("deviceId", randomDeviceId());
+        deviceInfo.put("os", "android");
+        deviceInfo.put("appVersion", "3.5.0");
+
+        try {
+            String response = RequestUtil.sendGet(Constant.URL_GET_ACCOUNT_INFO,
+                    "type=0&telephone=" + phone + "&verifyCode=" + code + "&nationCode=86&deviceInfo=" + URLEncoder.encode(deviceInfo.toJSONString(), "utf-8"), Constant.URL_SEND_CODE_HEADERS);
+            JSONObject jsonObject = JSONObject.parseObject(response);
+            if (getResponseCode(jsonObject)) {
+                return jsonObject.getString("msg");
+            }
+
+            JSONObject data = jsonObject.getJSONObject("data");
+            account.setLoginInfo(data.toJSONString());
+            account.setStatus(Constant.ACCOUNT_STATUS_LOGIN);
+            account.setMsg("登录成功");
+            account.insertOrUpdate();
+        } catch (Exception e) {
+            return "fail";
+        }
+
+        return "success";
+
+    }
+
+    /**
+     * 手机号批量登录
+     * @param phoneArray
+     */
+    private CommonResult phoneSomeLogin(String[] phoneArray, String token) {
+        JSONArray jsonArray = new JSONArray();
+        for (String phone : phoneArray) {
+            String phoneCode = "";
+            SysAccount account = new SysAccount();
+            CommonResult resp = getCode(phone);
+            long code = resp.getCode();
+            if (200 == code) {
+                for (int i = 0; i < 60; i++) {
+                    String response = RequestUtil.sendGet(Constant.LAIXIN_LOGIN_URL,
+                            "action=getMessage&sid=" + DataConfig.laixinId + "&phone=" + phone + "&token=" + token, new HashMap<>());
+                    String[] responseArray = response.split("\\|");
+                    String respCode = responseArray[0];
+                    if ("0".equals(respCode)) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {}
+                        continue;
+                    }
+
+                    phoneCode = responseArray[responseArray.length - 1];
+                    break;
+                }
+            }
+            if (StringUtils.isNotBlank(phoneCode) && phoneCode.contains("您的验证码是：")) {
+                int index = phoneCode.lastIndexOf("您的验证码是：");
+                phoneCode = phoneCode.substring(index + "您的验证码是：".length(), phoneCode.indexOf("，")).trim();
+                String message = getUserInfo(account, phone, phoneCode);
+                if ("success".equals(message)) {
+                    jsonArray.add(phone);
+                }
+            } else {
+                // 加入黑名单
+                RequestUtil.sendGet(Constant.LAIXIN_LOGIN_URL,
+                        "action=addBlacklist&sid=" + DataConfig.laixinId + "&phone=" + phone + "&token=" + token, new HashMap<>());
+            }
+        }
+
+        return CommonResult.success(jsonArray);
+    }
+
+    /**
+     * 随机获取设备
+     * @return
+     */
+    private String randomDeviceId() {
+        Random random = new Random();
+        StringBuilder deviceId = new StringBuilder();
+        for (int i = 0; i < 15; i++) {
+            deviceId.append(random.nextInt(10));
+        }
+
+        return deviceId.toString();
     }
 }

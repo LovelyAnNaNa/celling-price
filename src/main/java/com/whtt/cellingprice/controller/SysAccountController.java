@@ -126,6 +126,18 @@ public class SysAccountController {
     }
 
     /**
+     * 批量添加
+     * @param count
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/addSome")
+    public CommonResult addSome(@NotNull(message = "请输入添加数量") Integer count) {
+        return sysAccountService.addSome(count);
+    }
+
+
+    /**
      * 修改
      * @param sysAccount
      * @return
