@@ -63,17 +63,17 @@ public class SysUserController {
 
     @GetMapping(value = "/index")
     public String index() {
-        return "/index";
+        return "index";
     }
 
     @GetMapping(value = "/login")
     public String login() {
-        return "/login";
+        return "login";
     }
 
     @GetMapping(value = "/forgetPassword")
     public String forgetPassword() {
-        return "/forget-password";
+        return "forget-password";
     }
 
     @GetMapping(value = "/home")

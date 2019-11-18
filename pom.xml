@@ -37,8 +37,6 @@
 <!--            <version>3.0.4.RELEASE</version>-->
 <!--        </dependency>-->
 
-        <!-- https://mvnrepository.com/artifact/org.apache.struts/struts2-core -->
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>

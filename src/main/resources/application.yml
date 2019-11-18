@@ -1,8 +1,4 @@
 server:
-  #  ssl:
-  #    key-store: classpath:www.1s6s.cn.pfx
-  #    key-store-password: gm7m5042yi
-  #    key-store-type: PKCS12
   port: 8086
   tomcat:
     uri-encoding: utf-8
