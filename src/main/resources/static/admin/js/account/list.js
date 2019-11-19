@@ -45,6 +45,15 @@ layui.use(['layer', 'form', 'table'], function(){
                 content: $("#addPhone")
             });
         },
+        addSome: function () {
+            layer.open({
+                title: "账号批量添加登录",
+                type: 1,
+                area: ['400px', '200px'],
+                shade: 0,
+                content: $("#addSomePhone")
+            });
+        },
     };
 
     $("#saveAccount").click(function () {
@@ -64,6 +73,33 @@ layui.use(['layer', 'form', 'table'], function(){
             success: function (res) {
                 if (res.code == 200) {
                     layer.msg("账户添加成功", {time: 1000}, function () {
+                        //刷新父页面
+                        location.reload();
+                    });
+                } else {
+                    layer.msg(res.msg);
+                }
+            }
+        });
+    })
+
+    $("#saveSomeAccount").click(function () {
+        var count = $("#count").val();
+        if (count.replace(/(^s*)|(s*$)/g, "").length == 0 || count <= 0) {
+            layer.msg('请输入数量');
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/sysAccount/addSome",
+            dataType: "JSON",
+            data: {
+                "count": count
+            },
+            success: function (res) {
+                if (res.code == 200) {
+                    layer.msg("添加成功", {time: 1000}, function () {
                         //刷新父页面
                         location.reload();
                     });
@@ -117,6 +153,4 @@ layui.use(['layer', 'form', 'table'], function(){
         var type = $(this).data('type');
         active[type] ? active[type].call(this) : '';
     });
-
-
 });

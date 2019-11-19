@@ -27,7 +27,7 @@ public class AccountCountScheduleTask {
     @Scheduled(cron = "0 0 1 * * *")
     private void configureTasks() {
         QueryWrapper<SysAccount> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lt("count", 10);
+        queryWrapper.lt("count", 4);
 
         List<SysAccount> accountList = sysAccountService.list(queryWrapper);
         if (null != accountList) {

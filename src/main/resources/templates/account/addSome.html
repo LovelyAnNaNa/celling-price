@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>批量添加账号</title>
+    <link rel="stylesheet" th:href="@{/static/layui/css/layui.css}" media="all"/>
+</head>
+<body>
+
+<form class="layui-form">
+    <div class="layui-form-item">
+        <label class="layui-form-label" >手机号数量:</label>
+        <div class="layui-input-block" style="width: 80%">
+            <input type="text" name="count" class="layui-input" lay-verify="required">
+        </div>
+    </div>
+
+    <div class="layui-form-item" style="padding-left: 30%;">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" id="addSomeAccount" lay-filter="addSomeAccount">立即提交</button>
+        </div>
+    </div>
+</form>
+
+<table class="layui-table">
+    <colgroup>
+        <col width="150">
+        <col width="200">
+        <col>
+    </colgroup>
+    <thead>
+    <tr>
+        <th>手机号</th>
+        <th>状态</th>
+    </tr>
+    </thead>
+    <tbody id="showPhone">
+    </tbody>
+</table>
+
+
+</body>
+<script type="text/javascript" th:src="@{/static/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/admin/js/account/addSome.js}"></script>
+</html>

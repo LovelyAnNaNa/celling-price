@@ -53,6 +53,16 @@ public class SysAccountController {
     }
 
     /**
+     * 展现批量新增账号
+     * @return
+     */
+    @GetMapping("/addSome")
+    public String addSome() {
+        return "account/addSome";
+    }
+
+
+    /**
      * 分页搜索查询
      * @param page
      * @param limit

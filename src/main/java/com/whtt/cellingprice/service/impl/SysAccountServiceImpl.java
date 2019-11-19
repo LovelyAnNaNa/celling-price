@@ -1,6 +1,5 @@
 package com.whtt.cellingprice.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -15,13 +14,13 @@ import com.whtt.cellingprice.entity.pojo.SysCustomer;
 import com.whtt.cellingprice.mapper.SysAccountMapper;
 import com.whtt.cellingprice.service.SysAccountService;
 import com.whtt.cellingprice.service.SysCustomerService;
+import com.whtt.cellingprice.service.SysOrderService;
 import com.whtt.cellingprice.util.RequestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -40,9 +39,9 @@ import java.util.Random;
 @Service
 public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAccount> implements SysAccountService {
 
-
     @Resource
     private SysAccountMapper accountMapper;
+
     @Autowired
     private SysCustomerService sysCustomerService;
 
@@ -323,6 +322,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             customer.setIntegral(newIntegral);
             customer.updateById();
             replay += "花费积分：" + deductIntegral + "\n剩余积分：" + newIntegral + "\n操作状态：成功";
+            sysCustomerService.addOrder(url, customerNumber, type);
 
             return CommonResult.success(replay);
         }
@@ -388,8 +388,8 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
      * @return
      */
     private Map<String, String> getOfferParamter(String goodsId) {
-        String paramter = new String();
-        String replay = new String();
+        String paramter;
+        String replay;
         Map<String, String> result = new HashMap<>();
 
         String response = RequestUtil.sendGet(Constant.URL_GET_GOODS_INFO, "saleUri=" + goodsId, Constant.URL_OFFER_HEADERS);
@@ -495,7 +495,11 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
      * @param phoneArray
      */
     private CommonResult phoneSomeLogin(String[] phoneArray, String token) {
-        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
+        JSONArray success =  new JSONArray();
+        JSONArray fail = new JSONArray();
+        jsonObject.put("success", success);
+        jsonObject.put("fail", fail);
         for (String phone : phoneArray) {
             String phoneCode = "";
             SysAccount account = new SysAccount();
@@ -523,16 +527,17 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
                 phoneCode = phoneCode.substring(index + "您的验证码是：".length(), phoneCode.indexOf("，")).trim();
                 String message = getUserInfo(account, phone, phoneCode);
                 if ("success".equals(message)) {
-                    jsonArray.add(phone);
+                    success.add(phone);
                 }
             } else {
+                fail.add(phone);
                 // 加入黑名单
                 RequestUtil.sendGet(Constant.LAIXIN_LOGIN_URL,
                         "action=addBlacklist&sid=" + DataConfig.laixinId + "&phone=" + phone + "&token=" + token, new HashMap<>());
             }
         }
 
-        return CommonResult.success(jsonArray);
+        return CommonResult.success(jsonObject);
     }
 
     /**
