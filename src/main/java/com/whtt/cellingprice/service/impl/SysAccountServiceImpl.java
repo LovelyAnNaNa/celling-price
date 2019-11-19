@@ -480,6 +480,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             }
 
             JSONObject data = jsonObject.getJSONObject("data");
+            account.setPhone(phone);
             account.setLoginInfo(data.toJSONString());
             account.setStatus(Constant.ACCOUNT_STATUS_LOGIN);
             account.setMsg("登录成功");
@@ -489,7 +490,6 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         }
 
         return "success";
-
     }
 
     /**
