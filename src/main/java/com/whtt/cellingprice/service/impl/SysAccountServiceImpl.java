@@ -288,7 +288,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             Map<String, String> headres = new HashMap<>();
             headres.put("Accept", "application/json");
             headres.put("Origin", "https://w.weipaitang.com");
-            headres.put("User-Agent", "Mozilla/5.0 (Linux; Android 9; Redmi Note 5 Build/PKQ1.180904.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/045008 Mobile Safari/537.36 NetType/NETWORK_WIFI Language/zh_CN WptMessenger/3.5.0 Channel/xiaomi wptAid/xiaomi DeviceId/861742042644141 identity/e6a0ef5131a28a25a16e556c75eb1d80 brand/xiaomi model/RedmiNote5");
+            headres.put("User-Agent", String.format(Constant.UA, randomDeviceId()));
             headres.put("Cookie", "userinfo_cookie=" + jsonObject.getString("cookie"));
 
             String response = RequestUtil.sendGet(Constant.URL_OFFER, offerParamter, headres);
@@ -440,6 +440,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
      * @return
      */
     private CommonResult getCode(String phone) {
+        Constant.URL_SEND_CODE_HEADERS.put("User-Agent", String.format(Constant.UA, randomDeviceId()));
         String response = RequestUtil.sendPost(Constant.URL_SEND_CODE, "type=sms&telephone=" + phone + "&nationCode=86", Constant.URL_SEND_CODE_HEADERS);
         JSONObject jsonObject;
         try {
@@ -470,6 +471,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         deviceInfo.put("appVersion", "3.5.0");
 
         try {
+            Constant.URL_SEND_CODE_HEADERS.put("User-Agent", String.format(Constant.UA, randomDeviceId()));
             String response = RequestUtil.sendGet(Constant.URL_GET_ACCOUNT_INFO,
                     "type=0&telephone=" + phone + "&verifyCode=" + code + "&nationCode=86&deviceInfo=" + URLEncoder.encode(deviceInfo.toJSONString(), "utf-8"), Constant.URL_SEND_CODE_HEADERS);
             JSONObject jsonObject = JSONObject.parseObject(response);
@@ -478,6 +480,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             }
 
             JSONObject data = jsonObject.getJSONObject("data");
+            account.setPhone(phone);
             account.setLoginInfo(data.toJSONString());
             account.setStatus(Constant.ACCOUNT_STATUS_LOGIN);
             account.setMsg("登录成功");
@@ -487,7 +490,6 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         }
 
         return "success";
-
     }
 
     /**

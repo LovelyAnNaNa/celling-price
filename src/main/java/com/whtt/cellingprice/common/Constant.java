@@ -64,6 +64,11 @@ public class Constant {
     public final static String LAIXIN_LOGIN_URL = "http://api.smskkk.com/api/do.php";
 
     /**
+     * 请求ua
+     */
+    public final static String UA = "NetType/NETWORK_WIFI Language/zh_CN WptMessenger/3.5.0 Channel/oppo DeviceId/%s os/android oVersion/6.0.1 cVersion/3.5.0 ua/OPPOA57 brand/OPPO secretKey/secretKey";
+
+    /**
      * 发送验证码请求头
      */
     public final static Map<String, String> URL_SEND_CODE_HEADERS = new HashMap<>();
@@ -80,16 +85,15 @@ public class Constant {
         URL_SEND_CODE_HEADERS.put("sec-fetch-site", "same-site");
         URL_SEND_CODE_HEADERS.put("referer", "app.weipaitang.com");
         URL_SEND_CODE_HEADERS.put("origin", "app.weipaitang.com");
-        URL_SEND_CODE_HEADERS.put("user-agent", "NetType/NETWORK_WIFI Language/zh_CN WptMessenger/3.5.0 Channel/xiaomi wptAid/xiaomi DeviceId/861742042644141 os/android oVersion/9 cVersion/3.5.0 ua/RedmiNote5 identity/e6a0ef5131a28a25a16e556c75eb1d80 brand/xiaomi secretKey/secretKey");
-        URL_SEND_CODE_HEADERS.put("Cookie", "wptSceneChannel=xiaomi; wptAid=xiaomi");
+        URL_SEND_CODE_HEADERS.put("Cookie", "wptSceneChannel=oppo");
 
         URL_OFFER_HEADERS.put("sec-fetch-mode", "cors");
         URL_OFFER_HEADERS.put("sec-fetch-site", "same-site");
         URL_OFFER_HEADERS.put("origin", "https://w.weipaitang.com");
         URL_OFFER_HEADERS.put("user-agent", "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Mobile Safari/537.36");
 
-        SEND_URL_OFFER_HEADERS.put("User-Agent", "Mozilla/5.0 (Linux; Android 9; Redmi Note 5 Build/PKQ1.180904.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/045008 Mobile Safari/537.36 NetType/NETWORK_WIFI Language/zh_CN WptMessenger/3.5.0 Channel/xiaomi wptAid/xiaomi DeviceId/861742042644141 identity/e6a0ef5131a28a25a16e556c75eb1d80 brand/xiaomi model/RedmiNote5");
-        SEND_URL_OFFER_HEADERS.put("Cookie", "wptSceneChannel=xiaomi; wptAid=xiaomi");
+        SEND_URL_OFFER_HEADERS.put("user-agent", "NetType/NETWORK_WIFI Language/zh_CN WptMessenger/3.5.0 Channel/oppo DeviceId/%s os/android oVersion/6.0.1 cVersion/3.5.0 ua/OPPOA57 brand/OPPO secretKey/secretKey");
+        SEND_URL_OFFER_HEADERS.put("Cookie", "wptSceneChannel=oppo");
         SEND_URL_OFFER_HEADERS.put("origin", "https://w.weipaitang.com");
     }
 }
