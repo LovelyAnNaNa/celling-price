@@ -32,7 +32,7 @@ public class AccountCountScheduleTask {
         List<SysAccount> accountList = sysAccountService.list(queryWrapper);
         if (null != accountList) {
             accountList.forEach(a -> {
-                a.setCount(10);
+                a.setCount(4);
                 a.updateById();
             });
         }
