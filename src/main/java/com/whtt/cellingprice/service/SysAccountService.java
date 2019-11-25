@@ -100,4 +100,12 @@ public interface SysAccountService extends IService<SysAccount> {
      * @return
      */
     CommonResult addSome(Integer count);
+
+    /**
+     * 增加账号
+     * @param data
+     * @param phone
+     * @return
+     */
+    CommonResult add(String data, String phone);
 }

@@ -354,7 +354,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         String code = responseArray[0];
         String token = responseArray[responseArray.length - 1];
         if (!"1".equals(code)) {
-            return CommonResult.failed(token);
+            return CommonResult.failed();
         }
 
         response = RequestUtil.sendGet(Constant.LAIXIN_LOGIN_URL,
@@ -363,11 +363,33 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         code = responseArray[0];
         String phone = responseArray[responseArray.length - 1];
         if (!"1".equals(code)) {
-            return CommonResult.failed(phone);
+            return CommonResult.failed();
         }
 
         String[] phoneArray = phone.split(",");
         phoneSomeLogin(phoneArray, token);
+        return CommonResult.success();
+    }
+
+    /**
+     * 增加账号
+     *
+     * @param data
+     * @param phone
+     * @return
+     */
+    @Override
+    public CommonResult add(String data, String phone) {
+        if (null != selectByPhone(phone)) {
+            return CommonResult.failed();
+        }
+
+        SysAccount account = new SysAccount();
+        account.setPhone(phone);
+        account.setLoginInfo(data);
+        account.setStatus(Constant.ACCOUNT_STATUS_LOGIN);
+        account.setMsg("登录成功");
+        account.insert();
         return CommonResult.success();
     }
 

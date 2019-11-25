@@ -179,5 +179,15 @@ public class SysAccountController {
     public CommonResult deleteSome(@RequestBody @NotNull(message = "请选择账号") List<SysAccount> sysAccountList) {
         return sysAccountService.deleteSome(sysAccountList);
     }
+
+    /**
+     * 新增账号
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/add")
+    public CommonResult add(@NotBlank(message = "用户信息不能为空") String data, @NotBlank(message = "手机号不能为空") String phone) {
+        return sysAccountService.add(data, phone);
+    }
 }
 

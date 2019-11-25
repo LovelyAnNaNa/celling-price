@@ -21,6 +21,7 @@ public class WebAppConfig implements WebMvcConfigurer {
                         "/static/**",
                         "/admin/sysCustomer/insertCustomerOrAddIntegral",
                         "/admin/sysCustomer/customerInfo",
+                        "/sysAccount/add",
                         "/sysAccount/offer");
     }
 
