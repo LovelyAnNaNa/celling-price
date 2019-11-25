@@ -439,7 +439,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
      */
     private CommonResult getCode(String phone) {
         Constant.URL_SEND_CODE_HEADERS.put("User-Agent", String.format(Constant.UA, randomDeviceId()));
-        String response = RequestUtil.sendGet(Constant.URL_SEND_CODE, "type=sms&telephone=" + phone + "&nationCode=86", Constant.URL_SEND_CODE_HEADERS);
+        String response = RequestUtil.sendPost(Constant.URL_SEND_CODE, "type=sms&telephone=" + phone + "&nationCode=86", Constant.URL_SEND_CODE_HEADERS);
         JSONObject jsonObject;
         try {
             jsonObject = JSONObject.parseObject(response);
@@ -503,7 +503,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
                 CommonResult resp = getCode(phone);
                 long code = resp.getCode();
                 if (200 == code) {
-                    for (int i = 0; i < 20; i++) {
+                    for (int i = 0; i < 30; i++) {
                         String response = RequestUtil.sendGet(Constant.LAIXIN_LOGIN_URL,
                                 "action=getMessage&sid=" + DataConfig.laixinId + "&phone=" + phone + "&token=" + token, new HashMap<>());
                         String[] responseArray = response.split("\\|");
