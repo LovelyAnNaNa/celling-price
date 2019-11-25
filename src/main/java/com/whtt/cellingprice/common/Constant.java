@@ -66,7 +66,7 @@ public class Constant {
     /**
      * 请求ua
      */
-    public final static String UA = "NetType/NETWORK_WIFI Language/zh_CN WptMessenger/3.5.0 Channel/oppo DeviceId/%s os/android oVersion/6.0.1 cVersion/3.5.0 ua/OPPOA57 brand/OPPO secretKey/secretKey";
+    public final static String UA = "NetType/NETWORK_WIFI Language/zh_CN WptMessenger/3.5.1 Channel/oppo DeviceId/%s os/android oVersion/6.0.1 cVersion/3.5.1 ua/OPPOA57 brand/OPPO secretKey/secretKey";
 
     /**
      * 发送验证码请求头
@@ -81,8 +81,7 @@ public class Constant {
     public final static Map<String, String> SEND_URL_OFFER_HEADERS = new HashMap<>();
 
     static {
-        URL_SEND_CODE_HEADERS.put("sec-fetch-mode", "cors");
-        URL_SEND_CODE_HEADERS.put("sec-fetch-site", "same-site");
+        URL_SEND_CODE_HEADERS.put("host", "api.weipaitang.com");
         URL_SEND_CODE_HEADERS.put("referer", "app.weipaitang.com");
         URL_SEND_CODE_HEADERS.put("origin", "app.weipaitang.com");
         URL_SEND_CODE_HEADERS.put("Cookie", "wptSceneChannel=oppo");

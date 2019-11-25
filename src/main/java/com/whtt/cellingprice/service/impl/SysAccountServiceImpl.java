@@ -23,10 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * <p>
@@ -151,7 +148,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         }
 
         PageHelper.startPage(page,size);
-        List<SysAccount> accountList = accountMapper.selectList(queryWrapper);
+        List<SysAccount> accountList = accountMapper.selectList(queryWrapper.orderByDesc("id"));
         PageData<SysAccount> pageData = new PageData<>(accountList);
         return pageData;
     }
@@ -370,7 +367,8 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         }
 
         String[] phoneArray = phone.split(",");
-        return phoneSomeLogin(phoneArray, token);
+        phoneSomeLogin(phoneArray, token);
+        return CommonResult.success();
     }
 
     private boolean getResponseCode(JSONObject jsonObject) {
@@ -441,11 +439,11 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
      */
     private CommonResult getCode(String phone) {
         Constant.URL_SEND_CODE_HEADERS.put("User-Agent", String.format(Constant.UA, randomDeviceId()));
-        String response = RequestUtil.sendPost(Constant.URL_SEND_CODE, "type=sms&telephone=" + phone + "&nationCode=86", Constant.URL_SEND_CODE_HEADERS);
+        String response = RequestUtil.sendGet(Constant.URL_SEND_CODE, "type=sms&telephone=" + phone + "&nationCode=86", Constant.URL_SEND_CODE_HEADERS);
         JSONObject jsonObject;
         try {
             jsonObject = JSONObject.parseObject(response);
-            if (getResponseCode(jsonObject)) {
+            if (getResponseCode(jsonObject) || "操作失败".equals(jsonObject.getString("msg"))) {
                 return CommonResult.failed(jsonObject.getString("msg"));
             }
 
@@ -468,7 +466,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         deviceInfo.put("channel", "oppo");
         deviceInfo.put("deviceId", randomDeviceId());
         deviceInfo.put("os", "android");
-        deviceInfo.put("appVersion", "3.5.0");
+        deviceInfo.put("appVersion", "3.5.1");
 
         try {
             Constant.URL_SEND_CODE_HEADERS.put("User-Agent", String.format(Constant.UA, randomDeviceId()));
@@ -496,50 +494,44 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
      * 手机号批量登录
      * @param phoneArray
      */
-    private CommonResult phoneSomeLogin(String[] phoneArray, String token) {
-        JSONObject jsonObject = new JSONObject();
-        JSONArray success =  new JSONArray();
-        JSONArray fail = new JSONArray();
-        jsonObject.put("success", success);
-        jsonObject.put("fail", fail);
+    private void phoneSomeLogin(String[] phoneArray, String token) {
+        System.out.println(Arrays.toString(phoneArray));
         for (String phone : phoneArray) {
-            String phoneCode = "";
-            SysAccount account = new SysAccount();
-            CommonResult resp = getCode(phone);
-            long code = resp.getCode();
-            if (200 == code) {
-                for (int i = 0; i < 60; i++) {
-                    String response = RequestUtil.sendGet(Constant.LAIXIN_LOGIN_URL,
-                            "action=getMessage&sid=" + DataConfig.laixinId + "&phone=" + phone + "&token=" + token, new HashMap<>());
-                    String[] responseArray = response.split("\\|");
-                    String respCode = responseArray[0];
-                    if ("0".equals(respCode)) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {}
-                        continue;
+            new Thread(() -> {
+                String phoneCode = "";
+                SysAccount account = new SysAccount();
+                CommonResult resp = getCode(phone);
+                long code = resp.getCode();
+                if (200 == code) {
+                    for (int i = 0; i < 20; i++) {
+                        String response = RequestUtil.sendGet(Constant.LAIXIN_LOGIN_URL,
+                                "action=getMessage&sid=" + DataConfig.laixinId + "&phone=" + phone + "&token=" + token, new HashMap<>());
+                        String[] responseArray = response.split("\\|");
+                        String respCode = responseArray[0];
+                        if ("0".equals(respCode)) {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {}
+                            continue;
+                        }
+
+                        phoneCode = responseArray[responseArray.length - 1];
+                        break;
                     }
-
-                    phoneCode = responseArray[responseArray.length - 1];
-                    break;
                 }
-            }
-            if (StringUtils.isNotBlank(phoneCode) && phoneCode.contains("您的验证码是：")) {
-                int index = phoneCode.lastIndexOf("您的验证码是：");
-                phoneCode = phoneCode.substring(index + "您的验证码是：".length(), phoneCode.indexOf("，")).trim();
-                String message = getUserInfo(account, phone, phoneCode);
-                if ("success".equals(message)) {
-                    success.add(phone);
+                if (StringUtils.isNotBlank(phoneCode) && phoneCode.contains("您的验证码是：")) {
+                    int index = phoneCode.lastIndexOf("您的验证码是：");
+                    phoneCode = phoneCode.substring(index + "您的验证码是：".length(), phoneCode.indexOf("，")).trim();
+                    System.out.println("login success [+] " + phone);
+                    getUserInfo(account, phone, phoneCode);
+                } else {
+                    System.out.println("login fail [-] " + phone);
+                    // 加入黑名单
+                    RequestUtil.sendGet(Constant.LAIXIN_LOGIN_URL,
+                            "action=addBlacklist&sid=" + DataConfig.laixinId + "&phone=" + phone + "&token=" + token, new HashMap<>());
                 }
-            } else {
-                fail.add(phone);
-                // 加入黑名单
-                RequestUtil.sendGet(Constant.LAIXIN_LOGIN_URL,
-                        "action=addBlacklist&sid=" + DataConfig.laixinId + "&phone=" + phone + "&token=" + token, new HashMap<>());
-            }
+            }).start();
         }
-
-        return CommonResult.success(jsonObject);
     }
 
     /**
