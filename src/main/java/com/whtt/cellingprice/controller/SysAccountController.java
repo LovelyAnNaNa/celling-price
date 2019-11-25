@@ -74,8 +74,8 @@ public class SysAccountController {
     @GetMapping("/listByPageAndSearch")
     public PageData listByPageAndSearch(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                         @RequestParam(value = "limit", defaultValue = "10") Integer limit,
-                                        Integer status, String keyword) {
-        return sysAccountService.listByPageAndSearch(page, limit, status, keyword);
+                                        Integer status, String keyword, Integer type) {
+        return sysAccountService.listByPageAndSearch(page, limit, status, keyword, type);
     }
 
     /**

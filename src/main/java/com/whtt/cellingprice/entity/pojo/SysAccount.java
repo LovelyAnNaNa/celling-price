@@ -62,6 +62,11 @@ public class SysAccount extends Model<SysAccount> {
      */
     private Integer createId;
 
+    /**
+     * 账号类型（1：顶价，2：违约）
+     */
+    private Integer type;
+
     private LocalDateTime createTime;
 
     /**
@@ -80,6 +85,8 @@ public class SysAccount extends Model<SysAccount> {
     public static final String PHONE = "phone";
 
     public static final String STATUS = "status";
+
+    public static final String TYPE = "type";
 
     public static final String LOGIN_INTO = "login_into";
 

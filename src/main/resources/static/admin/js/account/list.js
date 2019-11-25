@@ -22,6 +22,7 @@ layui.use(['layer', 'form', 'table'], function(){
             // {type: 'checkbox'},
             {field: 'phone', title: '手机号',align:'center'},
             {field: 'msg', title: '账户信息',align:'center'},
+            {field: 'type', title: '账号类型',align:'center',templet:'#accountType'},
             {field: 'status', title: '账户状态',align:'center',templet:"#status"},
             {field: 'count', title: '剩余次数',align:'center',templet:"#count"},
             {fixed: 'right', align: 'center', toolbar: '#accountBar'}

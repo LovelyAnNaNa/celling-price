@@ -54,7 +54,7 @@ public interface SysAccountService extends IService<SysAccount> {
      * @param keyword
      * @return
      */
-    PageData listByPageAndSearch(Integer page, Integer size, Integer status, String keyword);
+    PageData listByPageAndSearch(Integer page, Integer size, Integer status, String keyword, Integer type);
 
     /**
      * 修改

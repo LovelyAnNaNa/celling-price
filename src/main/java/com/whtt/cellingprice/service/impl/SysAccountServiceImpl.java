@@ -59,6 +59,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         account.setStatus(Constant.ACCOUNT_STATUS_NOT_LOGIN);
         account.setCreateTime(LocalDateTime.now());
         account.setMsg("未知");
+        account.setType(1);
         boolean flag = account.insert();
         if (flag) {
             return CommonResult.success();
@@ -138,13 +139,16 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
      * @return
      */
     @Override
-    public PageData listByPageAndSearch(Integer page, Integer size, Integer status, String keyword) {
+    public PageData listByPageAndSearch(Integer page, Integer size, Integer status, String keyword, Integer type) {
         QueryWrapper<SysAccount> queryWrapper = new QueryWrapper<>();
         if (null != status) {
-            queryWrapper.like("status", status).or();
+            queryWrapper.eq("status", status).or();
         }
         if (StringUtils.isNotBlank(keyword)) {
-            queryWrapper.like("phone", keyword).or().like("msg", keyword);
+            queryWrapper.like("phone", keyword).or().like("msg", keyword).or();
+        }
+        if (null != type) {
+            queryWrapper.eq("type", type);
         }
 
         PageHelper.startPage(page,size);
