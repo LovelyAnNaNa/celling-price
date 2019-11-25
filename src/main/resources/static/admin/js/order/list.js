@@ -63,7 +63,7 @@ layui.use(['layer', 'form', 'table','laydate'], function () {
     table.on('tool(orderList)', function (obj) {
         var data = obj.data;
         if(obj.event == 'del'){
-            layer.confirm("您确定要删除该订单吗?", {title:'删除用户',btn: ['是的,我确定', '不,我在想想']},
+            layer.confirm("您确定要删除该订单吗?", {title:'删除订单',btn: ['是的,我确定', '不,我在想想']},
                 function () {
                     $.post("/admin/sysOrder/del", {"orderId": data.id}, function (res) {
                         var code = res.code;
