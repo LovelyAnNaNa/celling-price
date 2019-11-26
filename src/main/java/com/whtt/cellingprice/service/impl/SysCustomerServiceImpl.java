@@ -49,6 +49,10 @@ public class SysCustomerServiceImpl extends ServiceImpl<SysCustomerMapper, SysCu
         UpdateWrapper<SysRecharge> rechargeUpdateWrapper = new UpdateWrapper<>();
         rechargeUpdateWrapper.eq("customer_id",id);
         rechargeService.remove(rechargeUpdateWrapper);
+        //删除用户的顶价记录
+        UpdateWrapper<SysOrder> orderUpdateWrapper = new UpdateWrapper<>();
+        orderUpdateWrapper.eq("customer_id",id);
+        orderService.remove(orderUpdateWrapper);
     }
 
     @Override
