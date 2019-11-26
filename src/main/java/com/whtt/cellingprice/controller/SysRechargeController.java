@@ -83,7 +83,7 @@ public class SysRechargeController {
             return JSON.toJSONString(CommonResult.failed("所传用户id不正确!"));
         }
 
-        mav.setViewName("/recharge/add");
+        mav.setViewName("recharge/add");
         mav.addObject("customerInfo",customerInfo);
         return mav;
     }
