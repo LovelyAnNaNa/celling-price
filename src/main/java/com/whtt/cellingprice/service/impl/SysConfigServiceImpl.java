@@ -1,11 +1,10 @@
 package com.whtt.cellingprice.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.whtt.cellingprice.config.DataConfig;
 import com.whtt.cellingprice.entity.pojo.SysConfig;
 import com.whtt.cellingprice.mapper.SysConfigMapper;
 import com.whtt.cellingprice.service.SysConfigService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,13 +28,19 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
     public void updateConfig(List<SysConfig> configList) {
         configList.forEach(config -> {
             configMapper.updateById(config);
-            //如果更改的是顶价成功扣除的积分
+
             if("celling_integral".equals(config.getConfigKey())){
                 DataConfig.cellingIntegral = Integer.valueOf(config.getConfigValue());
-            }
-            //如果更改的是违约扣除的积分
-            if("violate_integral".equals(config.getConfigKey())){
+            } else if ("violate_integral".equals(config.getConfigKey())){
                 DataConfig.violateIntegral = Integer.valueOf(config.getConfigValue());
+            } else if ("laixin_username".equals(config.getConfigKey())){
+                DataConfig.laixinUsername = config.getConfigValue();
+            } else if ("laixin_password".equals(config.getConfigKey())){
+                DataConfig.laixinPassword = config.getConfigValue();
+            } else if ("laixin_id".equals(config.getConfigKey())){
+                DataConfig.laixinId = config.getConfigValue();
+            } else if ("integral_multiple".equals(config.getConfigKey())){
+                DataConfig.integralMultiple = Integer.valueOf(config.getConfigValue());
             }
         });
     }
