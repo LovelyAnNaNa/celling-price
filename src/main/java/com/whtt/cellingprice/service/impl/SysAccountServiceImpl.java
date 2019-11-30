@@ -35,9 +35,6 @@ import java.util.*;
 @Service
 public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAccount> implements SysAccountService {
 
-    @Resource
-    private SysAccountMapper accountMapper;
-
     @Autowired
     private SysCustomerService sysCustomerService;
 
@@ -151,7 +148,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         }
 
         PageHelper.startPage(page,size);
-        List<SysAccount> accountList = accountMapper.selectList(queryWrapper.orderByDesc("id"));
+        List<SysAccount> accountList = baseMapper.selectList(queryWrapper.orderByDesc("id"));
         PageData<SysAccount> pageData = new PageData<>(accountList);
         return pageData;
     }
@@ -304,15 +301,15 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             msg = jo.getString("msg");
 
             if (40000 == code) {
-                // 未支付过保证金
+                // 40000 未支付过保证金
                 account.setMsg(msg);
                 account.updateById();
                 continue;
             } else if (500 == code) {
                 // 500 拍品不存在
                 break;
-            }else if (420 == code) {
-                // 420：拍价已领先
+            } else if (420 == code || 100 == code) {
+                // 420：拍价已领先，100：缺少参数
                 continue;
             } else if (0 != code) {
                 // 0：成功
@@ -449,12 +446,25 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             JSONObject priceJson = sale.getJSONObject("priceJson");
             int increase = priceJson.getInteger("increase");
             int lastBid = 0;
+            //出价幅度
             int bidPrice = increase;
+            //价格
+            Integer bidmoney = priceJson.getInteger("bidmoney");
             if (jsonArray.size() > 0) {
                 lastBid = jsonArray.getJSONObject(0).getInteger("price");
                 bidPrice = lastBid + increase;
             } else {
-                bidPrice += priceJson.getInteger("bidmoney");
+                if (bidmoney > bidPrice) {
+                    bidPrice = bidmoney;
+                }
+            }
+
+            if (priceJson.containsKey("fixedPrice")) {
+                //获取一口价
+                Integer fixedPrice = priceJson.getInteger("fixedPrice");
+                if (bidPrice > fixedPrice && fixedPrice > 0) {
+                    bidPrice = fixedPrice;
+                }
             }
 
             paramter = "saleUri=" + goodsId + "&bidPrice=" + bidPrice + "&lastBid=" + lastBid + "&__uuri=";
