@@ -18,9 +18,14 @@ public class DataConfig implements InitializingBean {
     @Autowired
     private SysConfigService configService;
 
-    //每次顶价成功时扣除的积分
+    /**
+     * 每次顶价成功时扣除的积分
+     */
     public static Integer cellingIntegral;
-    //用户违约所需扣除的积分
+
+    /**
+     * 用户违约所需扣除的积分
+     */
     public static Integer violateIntegral;
 
     /**
@@ -34,18 +39,24 @@ public class DataConfig implements InitializingBean {
     public static String laixinPassword;
 
     /**
+     * 积分倍数
+     */
+    public static Integer integralMultiple;
+
+    /**
      * 来信微拍堂项目id
      */
     public static String laixinId;
 
 
     public static Integer getDeductIntegral(int status){
-        if(status == 1){
+        if (status == 1){
             return cellingIntegral;
         }
-        if(status == 2){
+        if (status == 2){
             return violateIntegral;
         }
+
         return null;
     }
 
@@ -65,5 +76,9 @@ public class DataConfig implements InitializingBean {
 
         SysConfig laixinIdConfig = configService.getOne(new QueryWrapper<SysConfig>().eq("config_key", "laixin_id"));
         laixinId = laixinIdConfig.getConfigValue();
+
+        SysConfig integralMultipleConfig = configService.getOne(new QueryWrapper<SysConfig>().eq("config_key", "integral_multiple"));
+        integralMultiple = Integer.valueOf(integralMultipleConfig.getConfigValue());
+        integralMultiple = integralMultiple <= 0 ? 1 : integralMultiple;
     }
 }

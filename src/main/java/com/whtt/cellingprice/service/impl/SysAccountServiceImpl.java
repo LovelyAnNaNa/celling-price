@@ -14,7 +14,6 @@ import com.whtt.cellingprice.entity.pojo.SysCustomer;
 import com.whtt.cellingprice.mapper.SysAccountMapper;
 import com.whtt.cellingprice.service.SysAccountService;
 import com.whtt.cellingprice.service.SysCustomerService;
-import com.whtt.cellingprice.service.SysOrderService;
 import com.whtt.cellingprice.util.RequestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -263,24 +262,27 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         } catch (Exception e) {
             return CommonResult.failed("请选择正确拍品");
         }
-        //请求参数
-        Map<String, String> result = getOfferParamter(goodsId);
-        String offerParamter = result.get("paramter");
-        if (StringUtils.isBlank(offerParamter)) {
-            return CommonResult.failed("请选择正确拍品");
-        }
-        String replay = result.get("replay");
 
         flag = false;
         //查询可用账号
         QueryWrapper<SysAccount> query = new QueryWrapper<>();
-        query.eq("status", Constant.ACCOUNT_STATUS_LOGIN);
+        query.eq("status", Constant.ACCOUNT_STATUS_LOGIN).eq("type", type);
         query.gt("count", 0);
 
+        String replay = "";
         String msg = "";
         Integer integral = customer.getIntegral();
         List<SysAccount> accountList = baseMapper.selectList(query);
         for (SysAccount account : accountList) {
+            //请求参数
+            Map<String, String> result = getOfferParamter(goodsId);
+            String offerParamter = result.get("paramter");
+            if (StringUtils.isBlank(offerParamter)) {
+                msg = "请选择正确拍品";
+                break;
+            }
+            replay = result.get("replay");
+
             String loginInfo = account.getLoginInfo();
             JSONObject jsonObject = JSONObject.parseObject(loginInfo);
             String uri = jsonObject.getString("uri");
@@ -295,15 +297,26 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             String response = RequestUtil.sendGet(Constant.URL_OFFER, offerParamter, headres);
             JSONObject jo = JSONObject.parseObject(response);
             Integer code = jo.getInteger("code");
-            //0：成功，420：拍价已领先
-            if (0 != code && 420 != code) {
-                msg = jo.getString("msg");
+            msg = jo.getString("msg");
+
+            if (40000 == code) {
+                // 未支付过保证金
+                account.setMsg(msg);
+                account.updateById();
+                continue;
+            } else if (500 == code) {
+                // 500 拍品不存在
+                break;
+            }else if (420 == code) {
+                // 420：拍价已领先
+                continue;
+            } else if (0 != code) {
+                // 0：成功
                 account.setMsg(msg);
                 account.setStatus(Constant.ACCOUNT_STATUS_FAILURE);
                 account.updateById();
                 continue;
             }
-
             Integer count = account.getCount() - 1;
             if (0 >= count) {
                 account.setStatus(Constant.ACCOUNT_STATUS_COUNT);
@@ -322,7 +335,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             newIntegral = newIntegral < 0 ? 0 : newIntegral;
             customer.setIntegral(newIntegral);
             customer.updateById();
-            replay += "花费积分：" + deductIntegral + "\n剩余积分：" + newIntegral + "\n操作状态：成功";
+            replay += "花费积分：" + deductIntegral + "\n剩余积分：" + newIntegral + "\n操作状态：成功\n拍品链接：" + url;
             sysCustomerService.addOrder(url, customerNumber, type);
 
             return CommonResult.success(replay);
@@ -424,7 +437,6 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             JSONObject shop = data.getJSONObject("shop");
             //店铺名称
             String nickname = shop.getString("nickname");
-
             JSONObject sale = data.getJSONObject("sale");
             //拍品名称
             String title = sale.getString("title");
@@ -437,6 +449,8 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             if (jsonArray.size() > 0) {
                 lastBid = jsonArray.getJSONObject(0).getInteger("price");
                 bidPrice = lastBid + increase;
+            } else {
+                bidPrice += priceJson.getInteger("bidmoney");
             }
 
             paramter = "saleUri=" + goodsId + "&bidPrice=" + bidPrice + "&lastBid=" + lastBid + "&__uuri=";

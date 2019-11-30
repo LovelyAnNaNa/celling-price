@@ -1,6 +1,7 @@
 package com.whtt.cellingprice.task;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.whtt.cellingprice.common.Constant;
 import com.whtt.cellingprice.entity.pojo.SysAccount;
 import com.whtt.cellingprice.service.SysAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ public class AccountCountScheduleTask {
         if (null != accountList) {
             accountList.forEach(a -> {
                 a.setCount(4);
+                a.setStatus(Constant.ACCOUNT_STATUS_LOGIN);
+                a.setMsg("登录成功");
                 a.updateById();
             });
         }

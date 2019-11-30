@@ -142,6 +142,7 @@ public class SysCustomerServiceImpl extends ServiceImpl<SysCustomerMapper, SysCu
         SysCustomer customer = getByCustomernumber(customerNumber);
         boolean flag;
         int type;
+        integral = integral * DataConfig.integralMultiple;
         if (null != customer) {
             //存在账号新增积分
             customer.setIntegral(customer.getIntegral() + integral);
