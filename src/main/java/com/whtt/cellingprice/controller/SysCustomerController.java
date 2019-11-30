@@ -30,9 +30,9 @@ import java.util.List;
 @Controller
 @RequestMapping("/admin/sysCustomer")
 public class SysCustomerController {
-
     @Autowired
     private SysOrderService orderService;
+
     @Autowired
     private SysCustomerService customerService;
 
@@ -140,6 +140,17 @@ public class SysCustomerController {
                                                     @NotBlank(message = "微信标示不能为空") String customerNumber,
                                                     @NotNull(message = "积分不能为空") Integer integral) {
         return customerService.insertCustomerOrAddIntegral(customerName, customerNumber, integral);
+    }
+
+    /**
+     * 启用或禁用账户
+     * @param id
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/enableCustomerOrProhibit")
+    public CommonResult enableCustomerOrProhibit(@NotNull(message = "请选择正确用户") Integer id) {
+        return customerService.enableCustomerOrProhibit(id);
     }
 
     @GetMapping(value = "/add")

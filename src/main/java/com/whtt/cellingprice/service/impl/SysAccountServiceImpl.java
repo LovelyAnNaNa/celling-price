@@ -246,6 +246,10 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         if (null == customer) {
             return CommonResult.failed("请先开通账号");
         }
+        Integer status = customer.getStatus();
+        if (null == status || status == 1) {
+            return CommonResult.failed("你已被禁用");
+        }
         boolean flag = sysCustomerService.checkIntegral(customerNumber, type);
         if (flag) {
             return CommonResult.failed(typeName + "所需积分：" + DataConfig.getDeductIntegral(type) + "。你当前积分为：" + customer.getIntegral() + "，请充值");

@@ -67,6 +67,11 @@ public class SysCustomer extends Model<SysCustomer> {
     private Date updateTime;
 
     /**
+     * 用户状态（0：启用，1：禁用）
+     */
+    private Integer status;
+
+    /**
      * 预留字段
      */
     private String standbyApplication;
@@ -87,6 +92,8 @@ public class SysCustomer extends Model<SysCustomer> {
     public static final String UPDATE_ID = "update_id";
 
     public static final String UPDATE_TIME = "update_time";
+
+    public static final String STATUS = "status";
 
     public static final String STANDBY_APPLICATION = "standby_application";
 

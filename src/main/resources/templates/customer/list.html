@@ -45,7 +45,21 @@
 <script type="text/html" id="customerBar">
     <a class="layui-btn layui-btn-xs" lay-event="recharge">增加积分</a>
     <a class="layui-btn layui-btn-xs layui-bg-red" lay-event="del">删除</a>
+    {{# if(d.status == 1) { }}
+    <a class="layui-btn layui-btn-xs" lay-event="enable">启用</a>
+    {{# }else{ }}
+    <a class="layui-btn layui-btn-xs layui-bg-red" lay-event="prohibit">禁用</a>
+    {{# }  }}
 </script>
+
+<script type="text/html" id="status">
+    {{# if(d.status == 0) { }}
+    <span class="layui-badge layui-bg-gray" >启用</span>
+    {{# }else{ }}
+    <span class="layui-badge layui-bg-red" >禁用</span>
+    {{# }  }}
+</script>
+
 
 </body>
 <script type="text/javascript" th:src="@{/static/layui/layui.js}"></script>

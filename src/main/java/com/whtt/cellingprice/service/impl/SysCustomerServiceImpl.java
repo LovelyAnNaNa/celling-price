@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.github.pagehelper.PageHelper;
+import com.sun.tools.corba.se.idl.IncludeGen;
 import com.whtt.cellingprice.common.CommonResult;
 import com.whtt.cellingprice.common.Constant;
 import com.whtt.cellingprice.config.DataConfig;
@@ -33,11 +34,12 @@ import java.util.List;
  */
 @Service
 public class SysCustomerServiceImpl extends ServiceImpl<SysCustomerMapper, SysCustomer> implements SysCustomerService {
-
     @Autowired
     private SysOrderService orderService;
+
     @Resource
     private SysCustomerMapper customerMapper;
+
     @Autowired
     private SysRechargeService rechargeService;
 
@@ -166,5 +168,25 @@ public class SysCustomerServiceImpl extends ServiceImpl<SysCustomerMapper, SysCu
         }
 
         return CommonResult.failed();
+    }
+
+    /**
+     * 启用或禁用账户
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public CommonResult enableCustomerOrProhibit(Integer id) {
+        SysCustomer customer = customerMapper.selectById(id);
+        if (null == customer) {
+            return CommonResult.failed("请选择正确用户");
+        }
+
+        Integer status= customer.getStatus() == 0 ? 1 : 0;
+        customer.setStatus(status);
+        customer.updateById();
+
+        return CommonResult.success();
     }
 }

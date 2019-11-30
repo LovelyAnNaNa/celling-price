@@ -20,7 +20,6 @@ layui.use(['layer', 'form', 'table','laydate'], function () {
         },
         width: $(parent.window).width() - 223,
         cols: [[
-            {type: 'checkbox'},
             {field: 'customerId', title: '充值用户名称',align:'center',templet:'<div>{{ d.customer.customerName }}</div>'},
             {field: 'integral', title: '充值积分',align:'center'},
             {field: 'money', title: '充值金额',align:'center'},

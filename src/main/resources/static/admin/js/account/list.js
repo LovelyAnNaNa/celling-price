@@ -19,11 +19,11 @@ layui.use(['layer', 'form', 'table'], function(){
         },
         cellMinWidth: 185,
         cols: [[
-            // {type: 'checkbox'},
+            {type: 'checkbox'},
             {field: 'phone', title: '手机号',align:'center'},
-            {field: 'msg', title: '账户信息',align:'center'},
+            {field: 'msg', title: '账号信息',align:'center'},
             {field: 'type', title: '账号类型',align:'center',templet:'#accountType'},
-            {field: 'status', title: '账户状态',align:'center',templet:"#status"},
+            {field: 'status', title: '账号状态',align:'center',templet:"#status"},
             {field: 'count', title: '剩余次数',align:'center',templet:"#count"},
             {fixed: 'right', align: 'center', toolbar: '#accountBar'}
         ]]
@@ -39,7 +39,7 @@ layui.use(['layer', 'form', 'table'], function(){
     var active = {
         addAccount: function () {
             layer.open({
-                title: "账户登录",
+                title: "账号登录",
                 type: 1,
                 area: ['400px', '200px'],
                 shade: 0,
@@ -55,6 +55,31 @@ layui.use(['layer', 'form', 'table'], function(){
                 content: $("#addSomePhone")
             });
         },
+        delSome: function () {
+            var checkStatus = table.checkStatus('accountTable'),
+                data = checkStatus.data;
+            layer.confirm("您确定要删除选中账号吗?", {title:'删除账号',btn: ['是的,我确定', '不,我在想想']},
+                function () {
+                    $.ajax({
+                        type: "POST",
+                        url: "/sysAccount/deleteSome",
+                        dataType: "json",
+                        contentType: "application/json",
+                        data: JSON.stringify(data),
+                        success: function (res) {
+                            var code = res['code'];
+                            if (200 == code) {
+                                layer.msg("删除成功!", {time: 1000}, function () {
+                                    table.reload('accountTable', t);//重新刷新表格
+                                });
+                            } else {
+                                layer.msg(res.msg);
+                            }
+                        }
+                    });
+                }
+            );
+        }
     };
 
     $("#saveAccount").click(function () {
@@ -73,7 +98,7 @@ layui.use(['layer', 'form', 'table'], function(){
             }),
             success: function (res) {
                 if (res.code == 200) {
-                    layer.msg("账户添加成功", {time: 1000}, function () {
+                    layer.msg("账号添加成功", {time: 1000}, function () {
                         //刷新父页面
                         location.reload();
                     });
@@ -114,7 +139,7 @@ layui.use(['layer', 'form', 'table'], function(){
     table.on('tool(accountList)', function (obj) {
         var data = obj.data;
         if(obj.event == 'del'){
-            layer.confirm("您确定要删除该账户吗?", {title:'删除账户',btn: ['是的,我确定', '不,我在想想']},
+            layer.confirm("您确定要删除该账号吗?", {title:'删除账号',btn: ['是的,我确定', '不,我在想想']},
                 function () {
                     $.post("/sysAccount/delete", {"id": data.id}, function (res) {
                         var code = res.code;
@@ -130,7 +155,7 @@ layui.use(['layer', 'form', 'table'], function(){
             );
         }else if(obj.event == 'login'){
             addIndex = layer.open({
-                title: "账户登录",
+                title: "账号登录",
                 type: 2,
                 area: ['80%', '100%'],//定义宽和高
                 content: "/sysAccount/add?phone=" + data.phone+"&id="+data.id,

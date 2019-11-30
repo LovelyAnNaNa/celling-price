@@ -39,4 +39,11 @@ public interface SysCustomerService extends IService<SysCustomer> {
      * @return
      */
     CommonResult insertCustomerOrAddIntegral(String customerName, String customerNumber, Integer integral);
+
+    /**
+     * 启用或禁用账户
+     * @param id
+     * @return
+     */
+    CommonResult enableCustomerOrProhibit(Integer id);
 }

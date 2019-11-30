@@ -30,11 +30,10 @@ layui.use(['layer', 'form', 'table','laydate'], function () {
         },
         width: $(parent.window).width() - 223,
         cols: [[
-            {type: 'checkbox'},
-            // {field:'id'},
             {field: 'customerName', title: '用户名称',align:'center'},
             {field: 'integral', title: '积分余额',align:'center'},
             {field: 'createTime', title: '添加时间',align:'center'},
+            {field: 'status', title: '用户状态',align:'center',templet:"#status"},
             {title: '操作', fixed: 'right', align: 'center', toolbar: '#customerBar'}
         ]]
         ,
@@ -105,6 +104,25 @@ layui.use(['layer', 'form', 'table','laydate'], function () {
               layer.full(addIndex);
           });
           layer.full(addIndex);
+      } else if (obj.event == 'enable' || obj.event == 'prohibit') {
+          var operation = '启用';
+          if (obj.event == 'prohibit') {
+              operation = '禁用';
+          }
+          layer.confirm("您确定要" + operation + "该用户吗？", {title: operation + '用户',btn: ['是的,我确定', '不,我在想想']},
+              function () {
+                  $.post("/admin/sysCustomer/enableCustomerOrProhibit", {"id": data.id}, function (res) {
+                      var code = res.code;
+                      if (200 == code) {
+                          layer.msg(operation + "成功!", {time: 1000}, function () {
+                              table.reload('customer-table', t);//重新刷新表格
+                          });
+                      } else {
+                          layer.msg(res.msg);
+                      }
+                  });
+              }
+          );
       }
     });
 
