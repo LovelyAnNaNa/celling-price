@@ -130,15 +130,16 @@ public class SysCustomerServiceImpl extends ServiceImpl<SysCustomerMapper, SysCu
      *
      * @param customerName
      * @param customerNumber
-     * @param integral
+     * @param money
      * @return
      */
     @Override
-    public CommonResult insertCustomerOrAddIntegral(String customerName, String customerNumber, Integer integral) {
+    public CommonResult insertCustomerOrAddIntegral(String customerName, String customerNumber, Integer money) {
         SysCustomer customer = getByCustomernumber(customerNumber);
         boolean flag;
         int type;
-        integral = integral * DataConfig.integralMultiple;
+        Integer integral = money * DataConfig.integralMultiple;
+        SysRecharge sysRecharge = new SysRecharge();
         if (null != customer) {
             //存在账号新增积分
             customer.setIntegral(customer.getIntegral() + integral);
@@ -153,11 +154,17 @@ public class SysCustomerServiceImpl extends ServiceImpl<SysCustomerMapper, SysCu
             type = 1;
         }
 
+        sysRecharge.setCreateTime(new Date());
+        sysRecharge.setCustomerId(customer.getId());
+        sysRecharge.setMoney(money);
+        sysRecharge.setIntegral(integral);
+        sysRecharge.insert();
+
         if (flag) {
             if (type == 1) {
                 return CommonResult.success(customerName + "（" + customerNumber + "），你好" + "开通账号成功，积分余额为：" + customer.getIntegral());
             } else {
-                return CommonResult.success(customerName + "（" + customerNumber + "），你好" + "充值积分，积分余额为：" + customer.getIntegral());
+                return CommonResult.success("%s您好，你本次充值积分为：" + integral + "，账户剩余积分为：" +  customer.getIntegral() + "。");
             }
         }
 

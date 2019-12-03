@@ -14,15 +14,18 @@ import com.whtt.cellingprice.entity.pojo.SysCustomer;
 import com.whtt.cellingprice.mapper.SysAccountMapper;
 import com.whtt.cellingprice.service.SysAccountService;
 import com.whtt.cellingprice.service.SysCustomerService;
+import com.whtt.cellingprice.util.RedisUtil;
 import com.whtt.cellingprice.util.RequestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import javax.annotation.PostConstruct;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * <p>
@@ -37,6 +40,20 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
 
     @Autowired
     private SysCustomerService sysCustomerService;
+
+    @Autowired
+    private RedisUtil redisUtil;
+
+    public static volatile Integer index = 1;
+
+    private Lock lock = new ReentrantLock();
+
+    @PostConstruct
+    public void init() {
+        //初始化缓存数据
+        List<SysAccount> accountList = baseMapper.selectList(new QueryWrapper<>());
+        redisUtil.set("accountList", accountList);
+    }
 
     /**
      * 新增账号
@@ -249,7 +266,17 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         }
         boolean flag = sysCustomerService.checkIntegral(customerNumber, type);
         if (flag) {
-            return CommonResult.failed(typeName + "所需积分：" + DataConfig.getDeductIntegral(type) + "。你当前积分为：" + customer.getIntegral() + "，请充值");
+            return CommonResult.failed("积分不足请充值\n" +
+                    "\n" +
+                    "会员号出价积分最低为 0\n" +
+                    "\n" +
+                    "当前剩余积分 -" + customer.getIntegral() + "\n" +
+                    "\n" +
+                    "抱歉，出价号成为最后一手必须付款，您可能有违约订单，如对积分有疑问或查询具体订单，请联系客服\n" +
+                    "\n" +
+                    "如需充值积分，请到 出价1号 或 出价2号 或 违约1号 直接转账，自动充值，任意号充值积分所有号通用\n" +
+                    "\n" +
+                    "充值积分在转账的时候备注里面填写“充值积分”。");
         }
 
         String goodsId;
@@ -265,17 +292,29 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         }
 
         flag = false;
-        //查询可用账号
+        // 查询可用账号
+//        List<SysAccount> accountList = (List<SysAccount>) redisUtil.get("accountList");
+//        accountList.parallelStream()
+//                .filter(account -> Constant.ACCOUNT_STATUS_LOGIN == account.getStatus())
+//                .filter(account -> type == account.getType())
+//                .filter(account -> account.getCount() > 0).collect(Collectors.toList()) ;
         QueryWrapper<SysAccount> query = new QueryWrapper<>();
         query.eq("status", Constant.ACCOUNT_STATUS_LOGIN).eq("type", type);
-        query.gt("count", 0);
+        query.gt("count", 0).ge("id", index);
+        List<SysAccount> accountList = baseMapper.selectList(query);
 
         String replay = "";
         String msg = "";
         Integer integral = customer.getIntegral();
-        List<SysAccount> accountList = baseMapper.selectList(query);
+        Integer i = 0;
+
         for (SysAccount account : accountList) {
-            //请求参数
+            ++i;
+            if (i == accountList.size()) {
+                index = 1;
+            }
+
+             // 请求参数
             Map<String, String> result = getOfferParamter(goodsId);
             String offerParamter = result.get("paramter");
             if (StringUtils.isBlank(offerParamter)) {
@@ -300,7 +339,9 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             Integer code = jo.getInteger("code");
             msg = jo.getString("msg");
 
-            if (40000 == code) {
+            if ("拍品已截拍".equals(msg) || "拍卖已结束".equals(msg)) {
+                break;
+            } else if (40000 == code) {
                 // 40000 未支付过保证金
                 account.setMsg(msg);
                 account.updateById();
@@ -327,17 +368,26 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             replay += "拍价账号：" + account.getPhone() + "\n";
 
             flag = true;
+            index = account.getId();
             break;
         }
 
         if (flag) {
-            Integer deductIntegral = DataConfig.getDeductIntegral(type);
-            int newIntegral = integral - deductIntegral;
-            newIntegral = newIntegral < 0 ? 0 : newIntegral;
-            customer.setIntegral(newIntegral);
-            customer.updateById();
-            replay += "花费积分：" + deductIntegral + "\n剩余积分：" + newIntegral + "\n操作状态：成功\n拍品链接：" + url;
-            sysCustomerService.addOrder(url, customerNumber, type);
+            try {
+                lock.lock();
+
+                Integer deductIntegral = DataConfig.getDeductIntegral(type);
+                int newIntegral = integral - deductIntegral;
+                newIntegral = newIntegral < 0 ? 0 : newIntegral;
+                customer.setIntegral(newIntegral);
+                customer.updateById();
+                replay += "花费积分：" + deductIntegral + "\n剩余积分：" + newIntegral + "\n操作状态：成功\n拍品链接：" + url;
+                sysCustomerService.addOrder(url, customerNumber, type);
+            } catch (Exception e) {
+
+            } finally {
+                lock.unlock();
+            }
 
             return CommonResult.success(replay);
         }
@@ -600,5 +650,16 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         }
 
         return deviceId.toString();
+    }
+
+    private List<List<SysAccount>> getSubLists(List<SysAccount> allData, int size) {
+        List<List<SysAccount>> result = new ArrayList();
+
+        for (int begin = 0; begin < allData.size(); begin = begin + size) {
+            int end = (begin + size > allData.size() ? allData.size() : begin + size);
+            result.add(allData.subList(begin, end));
+        }
+
+        return result;
     }
 }

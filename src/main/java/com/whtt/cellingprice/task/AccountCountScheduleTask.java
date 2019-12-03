@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.whtt.cellingprice.common.Constant;
 import com.whtt.cellingprice.entity.pojo.SysAccount;
 import com.whtt.cellingprice.service.SysAccountService;
+import com.whtt.cellingprice.service.impl.SysAccountServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -29,6 +30,7 @@ public class AccountCountScheduleTask {
     private void configureTasks() {
         QueryWrapper<SysAccount> queryWrapper = new QueryWrapper<>();
         queryWrapper.lt("count", 4);
+        SysAccountServiceImpl.index = 1;
 
         List<SysAccount> accountList = sysAccountService.list(queryWrapper);
         if (null != accountList) {
