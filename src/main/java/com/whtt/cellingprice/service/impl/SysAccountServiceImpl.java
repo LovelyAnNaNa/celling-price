@@ -305,7 +305,6 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
 
         String replay = "";
         String msg = "";
-        Integer integral = customer.getIntegral();
         Integer i = 0;
 
         for (SysAccount account : accountList) {
@@ -372,10 +371,12 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             break;
         }
 
+        Integer integral = 0;
         if (flag) {
             try {
                 lock.lock();
 
+                integral = customer.getIntegral();
                 Integer deductIntegral = DataConfig.getDeductIntegral(type);
                 int newIntegral = integral - deductIntegral;
                 newIntegral = newIntegral < 0 ? 0 : newIntegral;
