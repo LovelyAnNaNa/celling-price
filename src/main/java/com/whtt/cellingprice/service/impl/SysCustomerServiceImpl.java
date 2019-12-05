@@ -102,7 +102,6 @@ public class SysCustomerServiceImpl extends ServiceImpl<SysCustomerMapper, SysCu
     public void addOrder(String commodity, String customerNumber,Integer status) {
         //获取用户信息
         SysCustomer customerInfo = getByCustomernumber(customerNumber);
-        Integer integral = customerInfo.getIntegral();
         int deductInegral = DataConfig.getDeductIntegral(status);
 
         //添加一条订单信息

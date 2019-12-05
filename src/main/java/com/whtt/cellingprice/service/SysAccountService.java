@@ -107,5 +107,5 @@ public interface SysAccountService extends IService<SysAccount> {
      * @param phone
      * @return
      */
-    CommonResult add(String data, String phone);
+    CommonResult add(String data, String phone, Integer type);
 }

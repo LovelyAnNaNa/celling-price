@@ -24,8 +24,6 @@ import javax.annotation.PostConstruct;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * <p>
@@ -45,8 +43,6 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
     private RedisUtil redisUtil;
 
     public static volatile Integer index = 1;
-
-    private Lock lock = new ReentrantLock();
 
     @PostConstruct
     public void init() {
@@ -253,7 +249,6 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         if (1 != type && 2 != type) {
             return CommonResult.failed("请选择正确类型");
         }
-        String typeName = 1 == type ? "顶价" : "违约";
 
         QueryWrapper<SysCustomer> queryWrapper = new QueryWrapper<SysCustomer>().eq("customer_number", customerNumber);
         SysCustomer customer = sysCustomerService.getOne(queryWrapper);
@@ -342,6 +337,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
                 break;
             } else if (40000 == code) {
                 // 40000 未支付过保证金
+                account.setStatus(Constant.ACCOUNT_STATUS_FAILURE);
                 account.setMsg(msg);
                 account.updateById();
                 continue;
@@ -373,24 +369,22 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
 
         Integer integral = 0;
         if (flag) {
-            try {
-                lock.lock();
+            synchronized(this) {
+                try {
+                    customer = sysCustomerService.getOne(queryWrapper);
+                    integral = customer.getIntegral();
+                    Integer deductIntegral = DataConfig.getDeductIntegral(type);
+                    int newIntegral = integral - deductIntegral;
+                    newIntegral = newIntegral < 0 ? 0 : newIntegral;
+                    customer.setIntegral(newIntegral);
+                    customer.updateById();
+                    replay += "花费积分：" + deductIntegral + "\n剩余积分：" + newIntegral + "\n操作状态：成功\n拍品链接：" + url;
+                    sysCustomerService.addOrder(url, customerNumber, type);
+                } catch (Exception e) {
+                }
 
-                integral = customer.getIntegral();
-                Integer deductIntegral = DataConfig.getDeductIntegral(type);
-                int newIntegral = integral - deductIntegral;
-                newIntegral = newIntegral < 0 ? 0 : newIntegral;
-                customer.setIntegral(newIntegral);
-                customer.updateById();
-                replay += "花费积分：" + deductIntegral + "\n剩余积分：" + newIntegral + "\n操作状态：成功\n拍品链接：" + url;
-                sysCustomerService.addOrder(url, customerNumber, type);
-            } catch (Exception e) {
-
-            } finally {
-                lock.unlock();
+                return CommonResult.success(replay);
             }
-
-            return CommonResult.success(replay);
         }
 
         replay += "剩余积分：" + integral + "操作状态：失败\n失败信息：" + msg;
@@ -448,9 +442,12 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
      * @return
      */
     @Override
-    public CommonResult add(String data, String phone) {
+    public CommonResult add(String data, String phone, Integer type) {
         if (null != selectByPhone(phone)) {
             return CommonResult.failed();
+        }
+        if (null == type) {
+            type = 2;
         }
 
         SysAccount account = new SysAccount();
@@ -458,6 +455,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         account.setLoginInfo(data);
         account.setStatus(Constant.ACCOUNT_STATUS_LOGIN);
         account.setMsg("登录成功");
+        account.setType(type);
         account.insert();
         return CommonResult.success();
     }
