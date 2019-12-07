@@ -26,7 +26,7 @@ public interface SysCustomerService extends IService<SysCustomer> {
     //判断用户积分余额是否够用,true不够,false够
     boolean checkIntegral(String customerNumber,Integer status);
 
-    void addOrder(String commodity,String customerNumber,Integer status);
+    void addOrder(String commodity,String customerNumber,Integer status, String uri, long endTime, long accountId);
 
     //根据用户名模糊查询
     List<SysCustomer> getByFuzzyCustomername(String customerName);

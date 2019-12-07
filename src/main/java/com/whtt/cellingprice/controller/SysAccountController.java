@@ -191,5 +191,16 @@ public class SysAccountController {
                             Integer type) {
         return sysAccountService.add(data, phone, type);
     }
+
+    /**
+     * 我要付款
+     * @param customerNumber
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("/pay")
+    public CommonResult pay(@NotBlank(message = "用户账号为空") String customerNumber) {
+        return sysAccountService.pay(customerNumber);
+    }
 }
 

@@ -108,4 +108,11 @@ public interface SysAccountService extends IService<SysAccount> {
      * @return
      */
     CommonResult add(String data, String phone, Integer type);
+
+    /**
+     * 我要付款
+     * @param customerNumber
+     * @return
+     */
+    CommonResult pay(String customerNumber);
 }

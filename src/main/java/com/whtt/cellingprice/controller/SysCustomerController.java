@@ -62,20 +62,22 @@ public class SysCustomerController {
      * @param commodity 商品信息(随意)
      * @param customernumber 用户账号
      * @param status 状态,1顶价成功,2用户违约
+     * @param uri 拍品uri
      * @return
      */
     @ResponseBody
     @PostMapping(value = "/onOrder")
     public Object onOrder(@RequestParam(required = false) String commodity,
-                        @RequestParam @NotBlank(message = "用户账号不能为空!") String customernumber,
-                          @RequestParam @NotNull(message = "订单状态不能为空!")Integer status){
+                          @RequestParam @NotBlank(message = "用户账号不能为空!") String customernumber,
+                          @RequestParam @NotNull(message = "订单状态不能为空!")Integer status,
+                          String uri, long endTime, long accountId){
         //判断用户当天下单数量是否已经到4笔
         List<SysOrder> customerTodayOrder = orderService.getCustomerOrder(customernumber, DateUtil.formatDate(new Date()));
         if(customerTodayOrder.size() >= 4){
             return CommonResult.failed("当天下单数量已达最大数量!");
         }
 
-        customerService.addOrder(commodity,customernumber,status);
+        customerService.addOrder(commodity,customernumber,status, uri, endTime, accountId);
         return CommonResult.success();
     }
 

@@ -41,6 +41,8 @@ public class SysOrder extends OrderBase<SysOrder> {
      */
     private Integer customerId;
 
+    private Long accountId;
+
     /**
      * 顶价的商品
      */
@@ -61,11 +63,16 @@ public class SysOrder extends OrderBase<SysOrder> {
      */
     private String remarks;
 
+    private String uri;
+
     /**
      * 订单创建时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date endTime;
 
 
     public static final String ID = "id";

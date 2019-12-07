@@ -99,7 +99,7 @@ public class SysCustomerServiceImpl extends ServiceImpl<SysCustomerMapper, SysCu
     }
 
     @Override
-    public void addOrder(String commodity, String customerNumber,Integer status) {
+    public void addOrder(String commodity, String customerNumber,Integer status, String uri, long endTime, long accountId) {
         //获取用户信息
         SysCustomer customerInfo = getByCustomernumber(customerNumber);
         int deductInegral = DataConfig.getDeductIntegral(status);
@@ -113,6 +113,9 @@ public class SysCustomerServiceImpl extends ServiceImpl<SysCustomerMapper, SysCu
         newOrder.setStatus(status);
         //本次扣除的积分
         newOrder.setDeductIntegral(deductInegral);
+        newOrder.setUri(uri);
+        newOrder.setEndTime(new Date(endTime));
+        newOrder.setAccountId(accountId);
         //保存订单信息
         orderService.save(newOrder);
     }

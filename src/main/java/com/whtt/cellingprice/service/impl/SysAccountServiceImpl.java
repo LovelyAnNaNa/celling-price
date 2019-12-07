@@ -11,9 +11,11 @@ import com.whtt.cellingprice.common.PageData;
 import com.whtt.cellingprice.config.DataConfig;
 import com.whtt.cellingprice.entity.pojo.SysAccount;
 import com.whtt.cellingprice.entity.pojo.SysCustomer;
+import com.whtt.cellingprice.entity.pojo.SysOrder;
 import com.whtt.cellingprice.mapper.SysAccountMapper;
 import com.whtt.cellingprice.service.SysAccountService;
 import com.whtt.cellingprice.service.SysCustomerService;
+import com.whtt.cellingprice.service.SysOrderService;
 import com.whtt.cellingprice.util.RedisUtil;
 import com.whtt.cellingprice.util.RequestUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -41,6 +45,10 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
 
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private SysOrderService sysOrderService;
+
 
     public static volatile Integer index = 1;
 
@@ -160,7 +168,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             queryWrapper.eq("type", type);
         }
 
-        PageHelper.startPage(page,size);
+        PageHelper.startPage(page, size);
         List<SysAccount> accountList = baseMapper.selectList(queryWrapper.orderByDesc("id"));
         PageData<SysAccount> pageData = new PageData<>(accountList);
         return pageData;
@@ -274,6 +282,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
                     "充值积分在转账的时候备注里面填写“充值积分”。");
         }
 
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String goodsId;
         try {
             int index = url.lastIndexOf("/") + 1;
@@ -301,6 +310,8 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         String replay = "";
         String msg = "";
         Integer i = 0;
+        long accountId = 0;
+        long endTime = System.currentTimeMillis();
 
         for (SysAccount account : accountList) {
             ++i;
@@ -308,7 +319,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
                 index = 1;
             }
 
-             // 请求参数
+            // 请求参数
             Map<String, String> result = getOfferParamter(goodsId);
             String offerParamter = result.get("paramter");
             if (StringUtils.isBlank(offerParamter)) {
@@ -316,6 +327,10 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
                 break;
             }
             replay = result.get("replay");
+            try {
+                endTime = Long.valueOf(result.get("endTime") + "000");
+            } catch (Exception e) {
+            }
 
             String loginInfo = account.getLoginInfo();
             JSONObject jsonObject = JSONObject.parseObject(loginInfo);
@@ -335,6 +350,8 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
 
             if ("拍品已截拍".equals(msg) || "拍卖已结束".equals(msg)) {
                 break;
+            } else if (msg.contains("出价应高于领先价")) {
+                continue;
             } else if (40000 == code) {
                 // 40000 未支付过保证金
                 account.setStatus(Constant.ACCOUNT_STATUS_FAILURE);
@@ -364,12 +381,13 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
 
             flag = true;
             index = account.getId();
+            accountId = account.getId();
             break;
         }
 
         Integer integral = 0;
         if (flag) {
-            synchronized(this) {
+            synchronized (this) {
                 try {
                     customer = sysCustomerService.getOne(queryWrapper);
                     integral = customer.getIntegral();
@@ -378,8 +396,13 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
                     newIntegral = newIntegral < 0 ? 0 : newIntegral;
                     customer.setIntegral(newIntegral);
                     customer.updateById();
-                    replay += "花费积分：" + deductIntegral + "\n剩余积分：" + newIntegral + "\n操作状态：成功\n拍品链接：" + url;
-                    sysCustomerService.addOrder(url, customerNumber, type);
+                    replay += "花费积分：" + deductIntegral + "\n剩余积分：" + newIntegral + "\n操作状态：成功\n拍品链接：" + url + "\n截拍时间：" + simpleDateFormat.format(endTime) + "\n业务办理：请回复 0";
+                    if (1 == type) {
+                        // 顶价
+                        replay += "\n付款发送：我要付款";
+                    }
+
+                    sysCustomerService.addOrder(url, customerNumber, type, goodsId, endTime, accountId);
                 } catch (Exception e) {
                 }
 
@@ -387,7 +410,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             }
         }
 
-        replay += "剩余积分：" + integral + "操作状态：失败\n失败信息：" + msg;
+        replay += "剩余积分：" + integral + "\n操作状态：失败\n失败信息：" + msg;
         return CommonResult.failed(replay);
     }
 
@@ -403,7 +426,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             return CommonResult.failed("添加数量1-50之间");
         }
         String username = DataConfig.laixinUsername;
-        String password =DataConfig.laixinPassword;
+        String password = DataConfig.laixinPassword;
         if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
             return CommonResult.failed("请在系统配置正确配置来信账号密码");
         }
@@ -460,9 +483,138 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
         return CommonResult.success();
     }
 
+    /**
+     * 我要付款
+     *
+     * @param customerNumber
+     * @return
+     */
+    @Override
+    public CommonResult pay(String customerNumber) {
+        SysCustomer customer = sysCustomerService.getByCustomernumber(customerNumber);
+        if (null == customer) {
+            return CommonResult.failed("账号不存在");
+        }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        // 往前俩天
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, -2);
+        String frontDate = simpleDateFormat.format(calendar.getTime());
+
+        // 往后俩天
+        calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, +2);
+        String date = simpleDateFormat.format(calendar.getTime());
+
+        Map<String, String> headres = new HashMap<>();
+        headres.put("Accept", "application/json");
+        headres.put("Origin", "https://w.weipaitang.com");
+        headres.put("Referer", "https://w.weipaitang.com/my/order/notPay?r=buyerOrder&c=buyerOrder");
+
+        QueryWrapper<SysOrder> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("customer_id", customer.getId());
+        queryWrapper.between("end_time", frontDate, date);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        List<SysOrder> orders = sysOrderService.list(queryWrapper);
+        for (SysOrder order : orders) {
+            String uri1 = order.getUri();
+            Long accountId = order.getAccountId();
+            SysAccount account = getById(accountId);
+            if (null == account) {
+                continue;
+            }
+            String loginInfo = account.getLoginInfo();
+            if (StringUtils.isBlank(loginInfo)) {
+                continue;
+            }
+            JSONObject jsonObject = JSONObject.parseObject(loginInfo);
+            boolean isEnd;
+            String page = "";
+            do {
+                JSONObject response = getNoPayOrder(jsonObject, page, headres);
+                if (null == response) {
+                    break;
+                }
+                JSONObject data = response.getJSONObject("data");
+                isEnd = data.getBoolean("isEnd");
+                page = data.getString("page");
+
+                JSONArray items = data.getJSONArray("items");
+                for (int i = 0; i < items.size(); i++) {
+                    JSONObject item = items.getJSONObject(i);
+                    String uri = item.getString("uri");
+                    if (uri1.equals(uri)) {
+                        try {
+                            String payUrl = payMent(jsonObject, item, headres);
+                            stringBuilder.append("拍品链接：https://w.weipaitang.com/uri/" + uri + "\n");
+                            stringBuilder.append("支付链接：" + payUrl + "\n");
+                        } catch (UnsupportedEncodingException e) {
+                        }
+                        break;
+                    }
+                }
+                
+            } while (!isEnd);
+        }
+
+        return CommonResult.success(stringBuilder.toString());
+    }
+
+    private String payMent(JSONObject jsonObject, JSONObject item, Map<String, String> headres) throws UnsupportedEncodingException {
+        String uri = jsonObject.getString("uri");
+
+        headres.put("User-Agent", String.format(Constant.UA, randomDeviceId()));
+        headres.put("Cookie", "userinfo_cookie=" + jsonObject.getString("cookie"));
+        String paramter = "__uuri=" + uri;
+
+        String responseText = RequestUtil.sendGet(Constant.URL_GET_ADDRESS, paramter, headres);
+        JSONObject response = JSONObject.parseObject(responseText);
+
+        JSONArray data = response.getJSONObject("data").getJSONArray("addressList");
+        if (null != data && data.size() > 0) {
+            JSONObject address = data.getJSONObject(0);
+
+            address.put("err_msg", "");
+            address.put("nationalCode", "");
+            paramter = "__uuri=" + uri + "&deliverJson=" + URLEncoder.encode(address.toJSONString(), "utf-8") +
+                    "&liveOrder=1&shopRedpackUri=&userCouponUri=&allowance=0&type=residue&couponValue=0&shopRedpackOriginValue=0&platform=2&festivalAllowance=0&money=" + item.getJSONObject("win").getInteger("price") + "00&randReduce=0&saleUri=" + item.getString("uri") + "&deposit=0&shopRedpackValue=0";
+
+            responseText = RequestUtil.sendGet(Constant.URL_PAY, paramter, headres);
+            response = JSONObject.parseObject(responseText);
+            if (getResponseCode(response)) {
+                return "";
+            }
+
+            String orderNo = response.getJSONObject("data").getString("orderNo");
+            String payUrl = "https://w.weipaitang.com/payOrder/friend" + orderNo + "?r=buyerOrder&c=buyerOrder&from=qq";
+            return payUrl;
+        }
+
+        return "";
+    }
+
+    private JSONObject getNoPayOrder(JSONObject jsonObject, String page, Map<String, String> headres) {
+        String uri = jsonObject.getString("uri");
+
+        headres.put("User-Agent", String.format(Constant.UA, randomDeviceId()));
+        headres.put("Cookie", "userinfo_cookie=" + jsonObject.getString("cookie"));
+        String paramter = "__uuri=" + uri + "&start=&page=" + page + "&type=notPay&r=buyerOrder&c=buyerOrder";
+
+        String responseText = RequestUtil.sendGet(Constant.URL_GET_ORDER, paramter, headres);
+        JSONObject response = JSONObject.parseObject(responseText);
+        if (getResponseCode(response)) {
+            return null;
+        }
+
+        return response;
+    }
+
     private boolean getResponseCode(JSONObject jsonObject) {
         Integer respCode = jsonObject.getInteger("code");
-        if (0 != respCode) {
+        String msg = jsonObject.getString("msg");
+        if (0 != respCode || !"success".equals(msg)) {
             return true;
         }
 
@@ -471,6 +623,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
 
     /**
      * 获取出价请求接口参数
+     *
      * @param goodsId
      * @return
      */
@@ -494,6 +647,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             JSONArray jsonArray = sale.getJSONObject("bid").getJSONArray("bidList");
             JSONObject priceJson = sale.getJSONObject("priceJson");
             int increase = priceJson.getInteger("increase");
+            long endTime = sale.getLong("endTime");
             int lastBid = 0;
             //出价幅度
             int bidPrice = increase;
@@ -520,13 +674,16 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
             replay = "店铺名称：" + nickname + "\n拍品名称：" + title + "\n拍价金额：" + bidPrice + "\n";
             result.put("paramter", paramter);
             result.put("replay", replay);
-        } catch (Exception e) {}
+            result.put("endTime", endTime + "");
+        } catch (Exception e) {
+        }
 
         return result;
     }
 
     /**
      * 根据手机号查询
+     *
      * @param phone
      * @return
      */
@@ -537,6 +694,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
 
     /**
      * 获验证码
+     *
      * @param phone
      * @return
      */
@@ -559,6 +717,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
 
     /**
      * 获取用户信息
+     *
      * @param account
      * @param phone
      * @param code
@@ -595,6 +754,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
 
     /**
      * 手机号批量登录
+     *
      * @param phoneArray
      */
     private void phoneSomeLogin(String[] phoneArray, String token) {
@@ -614,7 +774,8 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
                         if ("0".equals(respCode)) {
                             try {
                                 Thread.sleep(1000);
-                            } catch (InterruptedException e) {}
+                            } catch (InterruptedException e) {
+                            }
                             continue;
                         }
 
@@ -639,6 +800,7 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
 
     /**
      * 随机获取设备
+     *
      * @return
      */
     private String randomDeviceId() {
@@ -661,4 +823,5 @@ public class SysAccountServiceImpl extends ServiceImpl<SysAccountMapper, SysAcco
 
         return result;
     }
+
 }

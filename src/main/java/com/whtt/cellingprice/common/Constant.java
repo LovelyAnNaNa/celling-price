@@ -44,6 +44,21 @@ public class Constant {
     public final static String URL_SEND_CODE = "https://api.weipaitang.com/app/v1.0/user/send-code";
 
     /**
+     * 获取订单列表
+     */
+    public final static String URL_GET_ORDER = "https://myapi.weipaitang.com/wechat/v1.0/order/list-l";
+
+    /**
+     * 获取收货地址
+     */
+    public final static String URL_GET_ADDRESS = "https://api.weipaitang.com/app/v1.0/address/get-address-list-l";
+
+    /**
+     * 去支付
+     */
+    public final static String URL_PAY = "https://api.weipaitang.com/app/v1.0/pay/to-pay-residue-l";
+
+    /**
      * 获取账号登录信息url
      */
     public final static String URL_GET_ACCOUNT_INFO = "https://api.weipaitang.com/app/v1.0/user/login";

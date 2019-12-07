@@ -10,12 +10,15 @@
         <result column="status" property="status" />
         <result column="deduct_integral" property="deductIntegral" />
         <result column="remarks" property="remarks" />
+        <result column="uri" property="uri" />
         <result column="create_time" property="createTime" />
+        <result column="end_time" property="endTime" />
+        <result column="account_id" property="accountId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, customer_id, commodity, status, deduct_integral, remarks, create_time
+        id, customer_id, commodity, status, deduct_integral, remarks, create_time, uri, end_time, account_id
     </sql>
     <select id="getSumDeductintegral" resultType="java.lang.Integer">
         select sum(deduct_integral)
